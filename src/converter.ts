@@ -123,6 +123,21 @@ export class WeChatMarkdownConverter {
       </strong>`;
     };
 
+               // 表格渲染
+           renderer.table = ({ header, rows }: any) => {
+             const headerRow = this.renderTableHeader(header);
+             const bodyRows = rows.map((row: any, index: number) => this.renderTableRow(row, index)).join('');
+             
+             return `<section data-tool="mdnice编辑器" style="${WeChatStyles.tableContainer.style}">
+               <table style="${WeChatStyles.table.style}">
+                 <thead>
+                   ${headerRow}
+                 </thead>
+                 ${bodyRows}
+               </table>
+             </section>`;
+           };
+
     marked.setOptions({ renderer });
   }
 
@@ -269,6 +284,39 @@ export class WeChatMarkdownConverter {
       "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, (m) => map[m] || m);
+  }
+
+           /**
+          * 渲染表格头部
+          */
+         private renderTableHeader(header: any[]): string {
+           const cells = header.map(cell => {
+             const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
+             return `<th style="${WeChatStyles.th.style}">
+               <section>
+                 <span leaf="">${cellContent}</span>
+               </section>
+             </th>`;
+           }).join('');
+           
+           return `<tr>${cells}</tr>`;
+         }
+
+  /**
+   * 渲染表格行
+   */
+  private renderTableRow(row: any[], index: number): string {
+    const isEven = index % 2 === 1; // 因为header算第0行，所以从1开始为偶数行
+    const rowStyle = isEven ? WeChatStyles.trEven.style : WeChatStyles.trOdd.style;
+    
+    const cells = row.map(cell => {
+      const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
+      return `<td style="${WeChatStyles.td.style}">
+        <span leaf="">${cellContent}</span>
+      </td>`;
+    }).join('');
+    
+    return `<tr style="${rowStyle}">${cells}</tr>`;
   }
 }
 
