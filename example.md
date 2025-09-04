@@ -37,8 +37,6 @@ OpenAI 宣布 `ChatGPT Projects` 功能现已向所有 **Free** 用户开放。
 
 ![ChatGPT界面](https://mmbiz.qpic.cn/sz_mmbiz_png/ykj6qYPSm3fficYlTjsBfyTorHHzfeDmriaPmgxbZ0d6JG9tZmBnltFdbYY0JewC1mr99F0zdaIgcV2Ca0XjuJsg/640?wx_fmt=png&from=appmsg&tp=webp&wxfrom=5&wx_lazy=1#imgIndex=1)
 
-https://x.com/OpenAI/status/1963329936368046111
-
 ---
 
 ## 微软模拟光计算机突破 #2
@@ -83,7 +81,7 @@ https://x.com/OpenAI/status/1963329936368046111
 
 ## 样式测试示例 #7
 
-### 间距测试
+**间距测试**
 
 测试不同的加粗文本间距控制：
 
@@ -99,7 +97,7 @@ https://x.com/OpenAI/status/1963329936368046111
 2. 单侧间距：这是 `左空格`代码和`右空格` 代码
 3. 双侧间距：这是 `双侧空格` 代码的示例
 
-## 表格功能测试
+**表格功能测试**
 
 基本表格：
 

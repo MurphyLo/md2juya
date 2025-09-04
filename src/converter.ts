@@ -87,11 +87,7 @@ export class WeChatMarkdownConverter {
 
     // 代码块渲染
     renderer.code = ({ text }: any) => {
-      return `<pre style="${WeChatStyles.pre.style}">
-        <code style="${WeChatStyles.pre.code}">
-          <span leaf="">${this.escapeHtml(text)}</span>
-        </code>
-      </pre>`;
+      return `<pre style="${WeChatStyles.pre.style}"><code style="${WeChatStyles.pre.code}"><span leaf="">${this.escapeHtml(text)}</span></code></pre>`;
     };
 
     // 内联代码渲染

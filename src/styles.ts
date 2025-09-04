@@ -48,8 +48,8 @@ export const WeChatStyles = {
 
   // 代码块样式
   pre: {
-    style: `margin-top: 10px;margin-bottom: 10px;margin-left: 10px;margin-right: 10px;padding: 0px;`,
-    code: `padding: 16px;background: #fff;overflow-x: auto;display: block;background-color: rgb(255, 255, 255);color: rgb(56, 58, 66);font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;font-size: 14px;border: 0.5px solid rgb(218, 216, 212);padding: 12px;border-radius: 12px !important;`
+    style: `margin-top: 10px;margin-bottom: 10px;margin-left: 10px;margin-right: 10px;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;padding-right: 0px;`,
+    code: `padding: 16px;background: #fff;overflow-x: auto;display: block;background-color: rgb(255, 255, 255);background-position-x: 0%;background-position-y: 0%;background-repeat: repeat;background-attachment: scroll;background-image: none;background-size: auto;background-origin: padding-box;background-clip: border-box;color: rgb(56, 58, 66);font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;font-size: 14px;border-top-width: 0.5px;border-top-style: solid;border-top-color: rgb(218, 216, 212);border-right-width: 0.5px;border-right-style: solid;border-right-color: rgb(218, 216, 212);border-bottom-width: 0.5px;border-bottom-style: solid;border-bottom-color: rgb(218, 216, 212);border-left-width: 0.5px;border-left-style: solid;border-left-color: rgb(218, 216, 212);border-image-outset: 0;border-image-repeat: stretch;border-image-slice: 100%;border-image-source: none;border-image-width: 1;padding-top: 12px;padding-right: 12px;padding-bottom: 12px;padding-left: 12px;border-top-left-radius: 12px !important;border-top-right-radius: 12px !important;border-bottom-right-radius: 12px !important;border-bottom-left-radius: 12px !important;`
   },
 
   // 内联代码样式
