@@ -95,14 +95,18 @@ const articleData = {
 
 ### 效果演示
 
-<div style="display: flex; gap: 20px; justify-content: center; align-items: flex-start; margin: 20px 0;">
-  <div style="flex: 1; text-align: center;">
-    <img src="assets/1.png" alt="转换前的Markdown效果" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
-  </div>
-  <div style="flex: 1; text-align: center;">
-    <img src="assets/2.png" alt="转换后的H5样式效果" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
-  </div>
-</div>
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="assets/1.png" alt="转换前的Markdown效果" width="400"/>
+<br/>
+</td>
+<td align="center" width="50%">
+<img src="assets/2.png" alt="转换后的H5样式效果" width="400"/>
+<br/>
+</td>
+</tr>
+</table>
 
 #### 高级用法
 ```typescript
