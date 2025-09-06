@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "node dist/test.js",
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js"
