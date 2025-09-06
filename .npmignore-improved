@@ -1,0 +1,22 @@
+# 源代码目录
+src/
+src-improved/
+
+# 开发工具配置
+tsconfig.json
+.DS_Store
+
+# 测试和示例文件
+test.ts
+example.md
+example_wechat.html
+
+# Git 相关
+.git/
+.gitignore
+
+# 包改进示例文件
+*-improved*
+
+# 开发日志
+*.log

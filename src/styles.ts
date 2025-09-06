@@ -1,9 +1,9 @@
 /**
- * 微信H5推送样式配置
+ * Juya AI日报H5推送样式配置
  * 直接提取自原始HTML文件的样式数据
  */
 
-export const WeChatStyles = {
+export const JuyaStyles = {
   // 容器样式
   container: {
     style: `margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-top: 20px;padding-bottom: 20px;padding-left: 0px;padding-right: 0px;background-color: rgb(250, 249, 245);width: auto;font-family: Optima, Microsoft YaHei, PingFangSC-regular, serif;font-size: 16px;color: rgb(0, 0, 0);line-height: 1.5em;word-spacing: 0em;letter-spacing: 0em;word-break: break-word;overflow-wrap: break-word;text-align: left;`,

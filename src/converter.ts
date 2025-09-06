@@ -1,11 +1,11 @@
 import { marked } from 'marked';
-import { WeChatStyles } from './styles.js';
+import { JuyaStyles } from './styles.js';
 
 /**
- * 微信H5推送Markdown转换器
+ * Juya AI日报H5版式制作器
  * 直接的数据驱动渲染，无复杂抽象层
  */
-export class WeChatMarkdownConverter {
+export class JuyaH5Maker {
   private listItemCounter = 0;
   
   constructor() {
@@ -22,9 +22,9 @@ export class WeChatMarkdownConverter {
     renderer.heading = ({ tokens, depth }: any) => {
       const text = this.parseTokens(tokens);
       if (depth === 1) {
-        return `<h1 style="${WeChatStyles.h1.style}">
+        return `<h1 style="${JuyaStyles.h1.style}">
           <span style="display: none;"></span>
-          <span style="${WeChatStyles.h1.span}">
+          <span style="${JuyaStyles.h1.span}">
             <span leaf="">${text}</span>
           </span>
           <span style="display: none;"></span>
@@ -36,11 +36,11 @@ export class WeChatMarkdownConverter {
         const title = match ? match[1]?.trim() : text;
         const tagNum = match ? match[2] : '';
         
-        return `<h2 style="${WeChatStyles.h2.style}">
+        return `<h2 style="${JuyaStyles.h2.style}">
           <span style="display: none;"></span>
-          <span style="${WeChatStyles.h2.span}">
+          <span style="${JuyaStyles.h2.span}">
             <span leaf="">${title}</span>
-            ${tagNum ? `<code style="${WeChatStyles.h2.tag}">
+            ${tagNum ? `<code style="${JuyaStyles.h2.tag}">
               <span leaf="">#${tagNum}</span>
             </code>` : ''}
           </span>
@@ -54,7 +54,7 @@ export class WeChatMarkdownConverter {
     // 段落渲染
     renderer.paragraph = ({ tokens }: any) => {
       const text = this.parseTokens(tokens);
-      return `<p style="${WeChatStyles.p.style}">
+      return `<p style="${JuyaStyles.p.style}">
         <span leaf="">${text}</span>
       </p>`;
     };
@@ -63,7 +63,7 @@ export class WeChatMarkdownConverter {
     renderer.list = ({ items }: any) => {
       this.listItemCounter = 0;
       const body = items.map((item: any) => this.renderListItem(item)).join('');
-      return `<ul class="${WeChatStyles.ul.className}" style="${WeChatStyles.ul.style}">
+      return `<ul class="${JuyaStyles.ul.className}" style="${JuyaStyles.ul.style}">
         ${body}
       </ul>`;
     };
@@ -77,9 +77,9 @@ export class WeChatMarkdownConverter {
       // 移除多余的换行和空格，保持紧凑格式
       parsedContent = this.compactHTML(parsedContent);
       
-      return `<blockquote style="${WeChatStyles.blockquote.style}">
+      return `<blockquote style="${JuyaStyles.blockquote.style}">
         <span style="display: none;"></span>
-        <p style="${WeChatStyles.blockquote.p}">
+        <p style="${JuyaStyles.blockquote.p}">
           ${parsedContent}
         </p>
       </blockquote>`;
@@ -87,34 +87,34 @@ export class WeChatMarkdownConverter {
 
     // 代码块渲染
     renderer.code = ({ text }: any) => {
-      return `<pre style="${WeChatStyles.pre.style}"><code style="${WeChatStyles.pre.code}"><span leaf="">${this.escapeHtml(text)}</span></code></pre>`;
+      return `<pre style="${JuyaStyles.pre.style}"><code style="${JuyaStyles.pre.code}"><span leaf="">${this.escapeHtml(text)}</span></code></pre>`;
     };
 
     // 内联代码渲染
     renderer.codespan = ({ text }: any) => {
-      return `<code style="${WeChatStyles.inlineCode.style}">
+      return `<code style="${JuyaStyles.inlineCode.style}">
         <span leaf="">${this.escapeHtml(text)}</span>
       </code>`;
     };
 
     // 图片渲染
     renderer.image = ({ href, title, text }: any) => {
-      return `<figure style="${WeChatStyles.figure.style}">
+      return `<figure style="${JuyaStyles.figure.style}">
         <span leaf="">
-          <img style="${WeChatStyles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
+          <img style="${JuyaStyles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
         </span>
       </figure>`;
     };
 
     // 水平分割线渲染
     renderer.hr = () => {
-      return `<hr style="${WeChatStyles.hr.style}" />`;
+      return `<hr style="${JuyaStyles.hr.style}" />`;
     };
 
     // 强调文本渲染
     renderer.strong = ({ tokens }: any) => {
       const text = this.parseTokens(tokens);
-      return `<strong style="${WeChatStyles.strong.style}">
+      return `<strong style="${JuyaStyles.strong.style}">
         <span leaf="">${text}</span>
       </strong>`;
     };
@@ -124,8 +124,8 @@ export class WeChatMarkdownConverter {
              const headerRow = this.renderTableHeader(header);
              const bodyRows = rows.map((row: any, index: number) => this.renderTableRow(row, index)).join('');
              
-             return `<section data-tool="mdnice编辑器" style="${WeChatStyles.tableContainer.style}">
-               <table style="${WeChatStyles.table.style}">
+             return `<section data-tool="mdnice编辑器" style="${JuyaStyles.tableContainer.style}">
+               <table style="${JuyaStyles.table.style}">
                  <thead>
                    ${headerRow}
                  </thead>
@@ -163,9 +163,9 @@ export class WeChatMarkdownConverter {
    * 渲染图片token
    */
   private renderImage(token: any): string {
-    return `<figure style="${WeChatStyles.figure.style}">
+    return `<figure style="${JuyaStyles.figure.style}">
       <span leaf="">
-        <img style="${WeChatStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
+        <img style="${JuyaStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
       </span>
     </figure>`;
   }
@@ -174,7 +174,7 @@ export class WeChatMarkdownConverter {
    * 渲染内联代码token
    */
   private renderInlineCode(token: any): string {
-    return `<code style="${WeChatStyles.inlineCode.style}"><span leaf="">${this.escapeHtml(token.text)}</span></code>`;
+    return `<code style="${JuyaStyles.inlineCode.style}"><span leaf="">${this.escapeHtml(token.text)}</span></code>`;
   }
 
   /**
@@ -182,7 +182,7 @@ export class WeChatMarkdownConverter {
    */
   private renderStrong(token: any): string {
     const text = token.tokens ? this.parseTokens(token.tokens, false) : token.text;
-    return `<strong style="${WeChatStyles.strong.style}"><span leaf="">${text}</span></strong>`;
+    return `<strong style="${JuyaStyles.strong.style}"><span leaf="">${text}</span></strong>`;
   }
 
   /**
@@ -208,9 +208,9 @@ export class WeChatMarkdownConverter {
       parsedContent = this.compactHTML(parsedContent);
       
                 return `<li>
-        <section style="${WeChatStyles.li.style}">
+        <section style="${JuyaStyles.li.style}">
           ${parsedContent}
-          <code style="${WeChatStyles.li.tag}">
+          <code style="${JuyaStyles.li.tag}">
             <span leaf="">#${tagNum}</span>
           </code>
         </section>
@@ -218,9 +218,9 @@ export class WeChatMarkdownConverter {
     } else {
       // 如果没有标签，自动添加序号标签
                 return `<li>
-        <section style="${WeChatStyles.li.style}">
+        <section style="${JuyaStyles.li.style}">
           ${parsedText}
-          <code style="${WeChatStyles.li.tag}">
+          <code style="${JuyaStyles.li.tag}">
             <span leaf="">#${this.listItemCounter}</span>
           </code>
         </section>
@@ -229,44 +229,60 @@ export class WeChatMarkdownConverter {
   }
 
   /**
-   * 紧凑化HTML，移除标签间的多余空白
+   * HTML压缩：移除多余空白符，减小文件体积
+   * 针对微信推送接口的大小限制进行优化
    */
-  private compactHTML(html: string): string {
+  private compressHTML(html: string): string {
     return html
-      .replace(/>\s+</g, '><')  // 移除标签间的空白
-      .replace(/\s{2,}/g, ' ')  // 多个空格压缩为单个
+      // 移除HTML注释
+      .replace(/<!--[\s\S]*?-->/g, '')
+      // 移除标签间的换行和空格
+      .replace(/>\s+</g, '><')
+      // 移除标签内多余的空白
+      .replace(/\s{2,}/g, ' ')
+      // 移除style属性值中的多余空格（保留功能完整性）
+      .replace(/style="\s+/g, 'style="')
+      .replace(/;\s+/g, ';')
+      .replace(/:\s+/g, ':')
+      // 移除span标签间的换行
+      .replace(/(<span[^>]*>)\s+/g, '$1')
+      .replace(/\s+(<\/span>)/g, '$1')
+      // 移除div/section标签间的换行
+      .replace(/(<(?:div|section|h[1-6]|p|li|td|th)[^>]*>)\s+/g, '$1')
+      .replace(/\s+(<\/(?:div|section|h[1-6]|p|li|td|th)>)/g, '$1')
+      // 最终清理
       .trim();
   }
 
   /**
-   * 转换Markdown为微信H5格式HTML
-   * @param markdown - Markdown源码
-   * @param title - 可选的文档标题
-   * @returns 完整的HTML文档
+   * 紧凑化HTML（保持向后兼容）
    */
-  convert(markdown: string, title?: string): string {
-    const content = marked.parse(markdown) as string;
-    
-    return `<div class="${WeChatStyles.container.className}" style="${WeChatStyles.container.style}">
-      ${title ? `<h1 style="${WeChatStyles.h1.style}">
-        <span style="display: none;"></span>
-        <span style="${WeChatStyles.h1.span}">
-          <span leaf="">${title}</span>
-        </span>
-        <span style="display: none;"></span>
-      </h1>` : ''}
-      ${content}
-    </div>`;
+  private compactHTML(html: string): string {
+    return this.compressHTML(html);
   }
 
   /**
-   * 转换纯内容(不包含容器)
-   * @param markdown - Markdown源码
-   * @returns HTML内容片段
+   * 计算字符串的UTF-8字节大小并转换为KB
    */
-  convertContent(markdown: string): string {
-    return marked.parse(markdown) as string;
+  private calculateSizeKB(str: string): number {
+    const bytes = new TextEncoder().encode(str).length;
+    return Math.round((bytes / 1024) * 100) / 100; // 保留2位小数
   }
+
+  /**
+   * 转换Markdown为微信H5格式HTML
+   * @param markdown - Markdown源码  
+   * @param compress - 是否压缩HTML（默认true，减小文件体积）
+   * @returns 包含HTML内容和KB大小的对象（HTML内容符合微信接口content字段要求）
+   */
+  convert(markdown: string, compress: boolean = true): { html: string; sizeKB: number } {
+    const rawHtml = marked.parse(markdown) as string;
+    const html = compress ? this.compressHTML(rawHtml) : rawHtml;
+    const sizeKB = this.calculateSizeKB(html);
+    
+    return { html, sizeKB };
+  }
+
 
   /**
    * HTML转义
@@ -288,7 +304,7 @@ export class WeChatMarkdownConverter {
          private renderTableHeader(header: any[]): string {
            const cells = header.map(cell => {
              const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
-             return `<th style="${WeChatStyles.th.style}">
+             return `<th style="${JuyaStyles.th.style}">
                <section>
                  <span leaf="">${cellContent}</span>
                </section>
@@ -303,11 +319,11 @@ export class WeChatMarkdownConverter {
    */
   private renderTableRow(row: any[], index: number): string {
     const isEven = index % 2 === 1; // 因为header算第0行，所以从1开始为偶数行
-    const rowStyle = isEven ? WeChatStyles.trEven.style : WeChatStyles.trOdd.style;
+    const rowStyle = isEven ? JuyaStyles.trEven.style : JuyaStyles.trOdd.style;
     
     const cells = row.map(cell => {
       const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
-      return `<td style="${WeChatStyles.td.style}">
+      return `<td style="${JuyaStyles.td.style}">
         <span leaf="">${cellContent}</span>
       </td>`;
     }).join('');
@@ -316,8 +332,7 @@ export class WeChatMarkdownConverter {
   }
 }
 
-// 导出便捷函数
-export function convertMarkdownToWeChat(markdown: string, title?: string): string {
-  const converter = new WeChatMarkdownConverter();
-  return converter.convert(markdown, title);
+export function convertToJuyaH5(markdown: string, compress: boolean = true): { html: string; sizeKB: number } {
+  const maker = new JuyaH5Maker();
+  return maker.convert(markdown, compress);
 }

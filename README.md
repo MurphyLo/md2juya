@@ -1,8 +1,8 @@
-# 微信H5推送 Markdown转换器
+# md2juya
 
-一个简洁高效的TypeScript工具，将标准Markdown转换为微信H5推送格式的HTML。
+将 Markdown 转换为 Juya AI 日报样式的微信 H5 推送内容，用于自动化的发布 workflow。
 
-## 🎯 支持的Markdown语法
+## 支持的Markdown语法
 
 | 语法类型 | Markdown语法 | 样式特征 | 特殊功能 |
 |---------|-------------|----------|----------|
@@ -11,143 +11,155 @@
 | **段落文本** | `普通文本` | 标准段落样式 | 支持内联格式混合 |
 | **无序列表** | `- 列表项 #1` | 自动编号 + 橘色标签 | 支持手动/自动编号 |
 | **引用块** | `> 引用内容` | 米色背景 + 圆角边框 | 支持内部格式嵌套 |
-| **代码块** | ` ```代码``` ` | 白色背景 + 灰色边框 + 圆角 | 自动语法高亮背景 |
-| **内联代码** | `` `代码` `` | 米色背景 + 橘红色文字 | 紧凑行内样式 |
-| **强调文本** | `**粗体**` | 深棕色加粗 | 用户完全控制间距 |
+| **代码块** | ` ```代码``` ` | 白色背景 + 灰色边框 + 圆角 | 未实现语法高亮 |
+| **内联代码** | `` `代码` `` | 米色背景 + 橘红色文字 | 等宽字体 |
+| **强调文本** | `**粗体**` | 深棕色加粗 | - |
 | **图片** | `![alt](url)` | 圆角 + 居中容器 | 自适应响应式 |
 | **分割线** | `---` | 虚线样式分隔 | 标准章节分割 |
-| **表格** | `\| 列1 \| 列2 \|` | 奇偶行交替背景 + 边框 | 自动表头样式区分 |
+| **表格** | `| 列1 | 列2 |` | 奇偶行交替背景 + 边框 | 自动表头样式区分 |
 
-### 🔧 高级特性
+## 快速开始
 
-- **嵌套格式支持**: 引用块内支持粗体、代码等格式
-- **自动编号系统**: 列表项和标题支持 `#数字` 标签
-- **响应式设计**: 图片和表格自适应容器宽度  
-- **紧凑HTML输出**: 自动移除多余空白，避免渲染异常
-- **完整样式隔离**: 每个元素都有独立的内联样式
-- **手动间距控制**: 粗体文本支持用户自定义间距
-
-## 🚀 快速开始
-
-### 安装依赖
+### 命令行使用（用于本地预览）
 ```bash
-npm install
+# 安装为全局命令
+npm install -g md2juya
+
+# 基础转换（默认压缩HTML，生成 input_juya.html）
+md2juya input.md
+
+# 指定输出文件名（默认压缩，使用--no-compress参数禁用HTML压缩）
+md2juya input.md output.html
 ```
 
-### 构建项目
-```bash
-npm run build
-```
+### 开发接口（用于推送 workflow 集成）
 
-### 运行测试
-```bash
-npm test
-```
-
-### 命令行使用
-```bash
-# 基础转换
-npm start input.md
-
-# 指定输出文件名  
-npm start input.md output.html
-
-# 示例：转换示例文件
-npm start example.md
-```
-
-## 💻 编程接口
-
-### 基础用法
+#### 基础用法
 ```typescript
-import { convertMarkdownToWeChat } from './src/converter';
+import { convertToJuyaH5 } from 'md2juya';
 
 const markdown = `
-# AI早报 2025-01-04
+![AI早报标题图](https://mmbiz.qpic.cn/sz_mmbiz_png/ykj6qYPSm3fficYlTjsBfyTorHHzfeDmr2Ch7tZNgRgFnicV1Kh2MBaUWOV9NbORvInqSqvXCoyqCUHbZZhp80OQ/640?wx_fmt=png&from=appmsg&tp=webp&wxfrom=5&wx_lazy=1)
 
-## 重要新闻 #1
+# 橘鸦 AI 早报 2025-09-04
+
+## 概览
 
 - ChatGPT **Projects** 已向免费用户开放 #1
 - 微软模拟光计算机突破 #2
 
-> 这是一个包含**加粗文本**和\`内联代码\`的引用块测试。
+---
 
-| 功能 | **免费版** | **付费版** |
-|------|------------|------------|
-| 基础功能 | ✓ | ✓ |
-| 高级功能 | ✗ | ✓ |
+## ChatGPT Projects 已向免费用户开放 #1
 
-\`\`\`javascript
-console.log('代码块示例');
-function demo() {
-  return 'Hello WeChat H5!';
-}
-\`\`\`
+> OpenAI 宣布 `ChatGPT Projects` 功能全面开放给免费用户，并提升了各层级的文件上传额度及增加了项目级记忆控制等新功能。
+
+OpenAI 宣布 `ChatGPT Projects` 功能现已向所有 **Free** 用户开放。
+
+此次更新还带来了文件上传额度的提升，并引入了新的自定义选项和独立的记忆控制开关，用户现在可以单独决定项目是否启用长期记忆。
+
+| 用户层级 | 单次项目文件上传上限 |
+| --- | --- |
+| Free | 5个 |
+| Plus | 25个 |
+| Pro/Business | 40个 |
+
+![ChatGPT界面](https://mmbiz.qpic.cn/sz_mmbiz_png/ykj6qYPSm3fficYlTjsBfyTorHHzfeDmriaPmgxbZ0d6JG9tZmBnltFdbYY0JewC1mr99F0zdaIgcV2Ca0XjuJsg/640?wx_fmt=png&from=appmsg&tp=webp&wxfrom=5&wx_lazy=1#imgIndex=1)
+
+---
+
+## 微软模拟光计算机突破 #2
+
+> **Microsoft Research Cambridge** 团队成功研发出模拟光计算机，并在证券结算和MRI扫描加速两大实际问题中验证了其可行性，展现出超越传统GPU的能效与速度潜力。
+
+**Microsoft Research Cambridge** 团队历时四年打造的模拟光计算机（`AOC`）首次在两项高价值优化任务中展现卓越性能，为涉及证券结算和MRI扫描加速两大实际问题中验证了其可行性，展现出超信传统 **GPU** 实现百倍能效及百倍速度提升。在 `AI` 方向，它已能完成小型机器学习任务，并展示了在状态跟踪类推理中的低能耗潜力。
+
+该设备由常用 `micro-LED`、智能手机镜头与传感器组装成，当前原型包含 **256** 个数量参数，后续计划每两年迭代一次并扩展至百万至千万级数量。
 `;
 
-const html = convertMarkdownToWeChat(markdown, '今日AI早报');
-console.log(html);
+// 获取HTML内容和KB大小（默认压缩）
+const { html, sizeKB } = convertToJuyaH5(markdown, true);
+
+// 检查微信1MB限制
+if (sizeKB > 1024) {
+  console.warn('内容超过微信1MB限制，建议启用压缩或减少内容');
+}
+
+// 用于微信公众号API调用
+const articleData = {
+  title: "AI早报 2025-09-04",
+  content: html,  // 纯HTML片段（默认压缩）
+  // ... 其他API字段
+};
 ```
 
-### 高级用法
+### 效果演示
+
+<div style="display: flex; gap: 20px; justify-content: center; align-items: flex-start; margin: 20px 0;">
+  <div style="flex: 1; text-align: center;">
+    <img src="assets/1.png" alt="转换前的Markdown效果" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
+    <p><em>转换前的Markdown源文件</em></p>
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <img src="assets/2.png" alt="转换后的H5样式效果" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
+    <p><em>转换后的H5微信推送样式</em></p>
+  </div>
+</div>
+
+#### 高级用法
 ```typescript
-import { WeChatMarkdownConverter } from './src/converter';
+import { JuyaH5Maker } from 'md2juya';
 
-const converter = new WeChatMarkdownConverter();
-const contentOnly = converter.convertContent(markdown); // 只转换内容，不包含容器
-const fullDocument = converter.convert(markdown, '文档标题'); // 完整文档
+const maker = new JuyaH5Maker();
+
+// 使用解构赋值获取HTML内容和KB大小
+const { html, sizeKB } = maker.convert(markdown, true);
 ```
 
-## 📁 项目结构
+### 本地开发
+```bash
+npm install
+npm run build
+
+# 创建全局命令链接（用于本地测试）
+npm link
+
+# 现在可以全局使用md2juya命令
+# 或直接使用node dist/cli.js example.md
+md2juya example.md
+
+# 修改代码后重新构建即可（无需重新link）
+npm run build
+
+# 开发完成后，取消全局链接
+npm unlink -g md2juya
+```
+
+## 项目结构
 
 ```
 src/
 ├── styles.ts      # 样式配置 - 从原始微信HTML精确提取
-├── converter.ts   # 核心转换逻辑 - 自定义marked.js渲染器
-├── index.ts       # CLI入口 - 命令行和程序化接口
-└── test.ts        # 测试用例 - 功能验证
-
-other/
-├── example.md     # 完整功能演示文件
-├── README.md      # 项目文档
-├── package.json   # 依赖管理 - ESM模块配置
-└── tsconfig.json  # TypeScript配置 - 自动生成
+├── converter.ts   # 核心转换逻辑 - 自定义marked.js渲染器  
+├── index.ts       # 包主入口 - 导出API接口
+└── cli.ts         # CLI工具 - 命令行接口
 ```
 
-## 🎨 设计原理
+## HTML压缩优化
 
-- **数据驱动渲染**: 无复杂抽象，直接的样式映射
-- **精确样式复制**: 直接提取原始微信HTML样式
-- **简洁架构**: 避免过度工程化，专注核心功能
-- **类型安全**: 完整的TypeScript类型支持
+为适应微信推送接口的大小限制，工具默认启用HTML压缩功能：
 
-## 📝 示例输出
+- **移除多余空白**：标签间换行、多余空格
+- **优化样式属性**：压缩style属性值中的空格  
+- **清理HTML注释**：移除不必要的注释内容
+- **保持功能完整**：确保样式和结构不受影响
 
-转换后的HTML特点：
-- ✅ **完整样式内联** - 无需外部CSS文件
-- ✅ **微信兼容性** - 完全复制原始推送样式
-- ✅ **响应式设计** - 自适应移动端显示
-- ✅ **即用性** - 可直接复制到微信公众号编辑器
+**压缩效果**：通常可减少20-40%的文件体积，有效节省微信接口传输成本。
 
-### 查看效果
-```bash
-# 生成示例HTML
-npm start example.md
+**控制选项**：
+- API: `convertToJuyaH5(markdown, false)` 禁用压缩
+- CLI: `md2juya input.md --no-compress` 禁用压缩
 
-# 用浏览器打开查看
-open example_wechat.html
-```
+## H5内容边界说明
 
-## ⚠️ 使用限制
-
-本转换器专门针对微信H5推送样式优化，**仅支持上述表格中列出的Markdown语法**。
-
-**不支持的语法**：
-- 有序列表 (`1. 项目`)  
-- 多级标题 (`### h3`, `#### h4` 等)
-- 链接 (`[文本](url)`) 
-- 删除线 (`~~删除~~`)
-- 任务列表 (`- [x] 任务`)
-- 脚注、数学公式等扩展语法
-
-如需这些功能，建议使用通用Markdown处理器。
+工具输出内容为纯HTML正文片段（如 `<h2>标题</h2><p>内容...</p>`），用于微信API的 `content` 字段。不包含：`<html>`, `<head>`, `<body>` 等完整页面结构。
