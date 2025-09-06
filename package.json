@@ -17,7 +17,6 @@
     "h5", 
     "converter"
   ],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^24.3.0",
@@ -26,5 +25,10 @@
   "dependencies": {
     "marked": "^16.2.1"
   },
-  "type": "module"
+  "type": "module",
+  "author": "MurphyLo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MurphyLo/md2juya.git"
+  }
 }
