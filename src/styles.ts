@@ -6,13 +6,13 @@
 export const JuyaStyles = {
   // 容器样式
   container: {
-    style: `margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-top: 20px;padding-bottom: 20px;padding-left: 0px;padding-right: 0px;background-color: rgb(250, 249, 245);width: auto;font-family: Optima, Microsoft YaHei, PingFangSC-regular, serif;font-size: 16px;color: rgb(0, 0, 0);line-height: 1.5em;word-spacing: 0em;letter-spacing: 0em;word-break: break-word;overflow-wrap: break-word;text-align: left;`,
+    style: `margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-top: 10px;padding-bottom: 20px;padding-left: 0px;padding-right: 0px;background-color: rgb(250, 249, 245);width: auto;font-family: Optima, Microsoft YaHei, PingFangSC-regular, serif;font-size: 16px;color: rgb(0, 0, 0);line-height: 1.5em;word-spacing: 0em;letter-spacing: 0em;word-break: break-word;overflow-wrap: break-word;text-align: left;`,
     className: 'rich_media_content js_underline_content autoTypeSetting24psection'
   },
 
   // H1标题样式  
   h1: {
-    style: `margin-top: 30px;margin-bottom: 15px;margin-left: 0px;margin-right: 0px;display: flex;justify-content: center;line-height: 1.5em;text-align: left;`,
+    style: `margin-top: 15px;margin-bottom: 15px;margin-left: 0px;margin-right: 0px;display: flex;justify-content: center;line-height: 1.5em;text-align: left;`,
     span: `font-size: 18px;color: rgb(201, 100, 66);line-height: 1.5em;letter-spacing: 0.06em;padding-top: 2px;padding-bottom: 2px;padding-left: 10px;padding-right: 10px;display: block;font-weight: bold;text-align: left;text-indent: 0em;`
   },
 
@@ -59,7 +59,7 @@ export const JuyaStyles = {
 
   // 图片样式
   figure: {
-    style: `margin-top: 10px;margin-bottom: 10px;margin-left: 10px;margin-right: 10px;padding: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center;`,
+    style: `margin-top: 10px;margin-bottom: 5px;margin-left: 10px;margin-right: 10px;padding: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center;`,
     img: `display: block;margin: 0 auto;max-width: 100%;border: none;box-shadow: none;border-radius: 12px;overflow: hidden;`
   },
 
