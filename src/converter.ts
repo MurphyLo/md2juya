@@ -39,10 +39,7 @@ export class JuyaH5Maker {
         return `<h2 style="${JuyaStyles.h2.style}">
           <span style="display: none;"></span>
           <span style="${JuyaStyles.h2.span}">
-            <span leaf="">${title}</span>
-            ${tagNum ? `<code style="${JuyaStyles.h2.tag}">
-              <span leaf="">#${tagNum}</span>
-            </code>` : ''}
+            <span leaf="">${title}</span>${tagNum ? `&nbsp;<code style="${JuyaStyles.h2.tag}"><span leaf="">#${tagNum}</span></code>` : ''}
           </span>
           <span style="display: none;"></span>
         </h2>`;
@@ -247,6 +244,9 @@ export class JuyaH5Maker {
       // 移除span标签间的换行
       .replace(/(<span[^>]*>)\s+/g, '$1')
       .replace(/\s+(<\/span>)/g, '$1')
+      // 去掉 </span> 与 &nbsp; 之间的缩进空白、以及 &nbsp; 与下一个标签之间的空白
+      .replace(/>\s+(&nbsp;)/g, '>$1')
+      .replace(/(&nbsp;)\s+</g, '$1<')
       // 移除div/section标签间的换行
       .replace(/(<(?:div|section|h[1-6]|p|li|td|th)[^>]*>)\s+/g, '$1')
       .replace(/\s+(<\/(?:div|section|h[1-6]|p|li|td|th)>)/g, '$1')

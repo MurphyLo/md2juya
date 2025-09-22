@@ -54,7 +54,7 @@ export const JuyaStyles = {
 
   // 内联代码样式
   inlineCode: {
-    style: `color: rgb(92, 22, 22);font-size: 14px;line-height: 1.8em;letter-spacing: 0em;background-color: rgb(240, 239, 235);font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;word-break: break-all;border: 0.5px solid rgb(209, 207, 204);border-radius: 8px;padding-top: 2px;padding-right: 4px;padding-bottom: 2px;padding-left: 4px;margin-top: 0px;margin-right: 2px;margin-bottom: 0px;margin-left: 2px;`
+    style: `color: rgb(201, 100, 66);font-size: 0.9em;line-height: 1.8em;letter-spacing: 0em;background-color: rgb(253, 252, 250);font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;word-break: break-all;border: 0.5px solid rgb(209, 207, 204);border-radius: 6px;padding-top: 2px;padding-right: 4px;padding-bottom: 2px;padding-left: 4px;margin-top: 0px;margin-right: 2px;margin-bottom: 0px;margin-left: 2px;vertical-align: baseline;transform: translateY(-2px);`
   },
 
   // 图片样式
