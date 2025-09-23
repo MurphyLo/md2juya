@@ -32,7 +32,8 @@ export class JuyaH5Maker {
       }
       
       if (depth === 2) {
-        const match = text.match(/^(.*?)\s*#(\d+)$/);
+        // 支持包含 U+2060 word joiner 的 #编号格式 (#⁠数字)
+        const match = text.match(/^(.*?)\s*#[\u2060]*(\d+)$/);
         const title = match ? match[1]?.trim() : text;
         const tagNum = match ? match[2] : '';
         
@@ -143,8 +144,8 @@ export class JuyaH5Maker {
         return this.renderImage(token);
       }
       if (token.type === 'codespan') {
-        // 在列表项中，如果是最后一个token且匹配 #x 格式，不渲染为代码标签
-        if (isListItem && index === tokens.length - 1 && /^#\d+$/.test(token.text)) {
+        // 在列表项中，如果是最后一个token且匹配 #x 格式（支持 U+2060 word joiner），不渲染为代码标签
+        if (isListItem && index === tokens.length - 1 && /^#[\u2060]*\d+$/.test(token.text)) {
           return token.raw || token.text;
         }
         return this.renderInlineCode(token);
@@ -195,8 +196,8 @@ export class JuyaH5Maker {
     // 移除多余的换行和空格，保持紧凑格式
     parsedText = this.compactHTML(parsedText);
     
-    // 检查原始文本中是否已经包含 #x 格式的标签
-    const tagMatch = rawText.match(/(.+?)\s*#(\d+)$/);
+    // 检查原始文本中是否已经包含 #x 格式的标签（支持 U+2060 word joiner）
+    const tagMatch = rawText.match(/(.+?)\s*#[\u2060]*(\d+)$/);
     if (tagMatch) {
       // 如果已有标签，提取内容和标签号，并重新解析内容部分
       const content = tagMatch[1]?.trim();
