@@ -6,7 +6,6 @@ import { JuyaStyles } from './styles.js';
  * 直接的数据驱动渲染，无复杂抽象层
  */
 export class JuyaH5Maker {
-  private listItemCounter = 0;
   private inlineContext: 'default' | 'plain' = 'default';
   
   constructor() {
@@ -183,8 +182,8 @@ export class JuyaH5Maker {
     let parsedText = this.withInlineContext('default', () => marked.parseInline(rawText) as string);
     parsedText = this.compactHTML(parsedText);
 
-    return `<li>
-      <section style="${JuyaStyles.li.style}">
+    return `<li style="${JuyaStyles.li.style}">
+      <section>
         ${parsedText}
       </section>
     </li>`;
@@ -201,30 +200,18 @@ export class JuyaH5Maker {
   }
 
   /**
-   * HTML压缩：移除多余空白符，减小文件体积
-   * 针对微信推送接口的大小限制进行优化
+   * 优化HTML压缩 - 避免过度压缩可能影响样式解析
    */
   private compressHTML(html: string): string {
     return html
       // 移除HTML注释
       .replace(/<!--[\s\S]*?-->/g, '')
-      // 移除标签间的换行和空格
-      .replace(/>\s+</g, '><')
-      // 移除标签内多余的空白
-      .replace(/\s{2,}/g, ' ')
-      // 移除style属性值中的多余空格（保留功能完整性）
+      // 移除标签间多余的空白，但保留单个空格
+      .replace(/>\s{2,}</g, '> <')
+      // 移除style属性中的多余空格
       .replace(/style="\s+/g, 'style="')
-      .replace(/;\s+/g, ';')
-      .replace(/:\s+/g, ':')
-      // 移除span标签间的换行
-      .replace(/(<span[^>]*>)\s+/g, '$1')
-      .replace(/\s+(<\/span>)/g, '$1')
-      // 去掉 </span> 与 &nbsp; 之间的缩进空白、以及 &nbsp; 与下一个标签之间的空白
-      .replace(/>\s+(&nbsp;)/g, '>$1')
-      .replace(/(&nbsp;)\s+</g, '$1<')
-      // 移除div/section标签间的换行
-      .replace(/(<(?:div|section|h[1-6]|p|li|td|th)[^>]*>)\s+/g, '$1')
-      .replace(/\s+(<\/(?:div|section|h[1-6]|p|li|td|th)>)/g, '$1')
+      .replace(/;\s+/g, '; ')  // 保留一个空格便于阅读
+      .replace(/:\s+/g, ': ')  // 保留一个空格便于阅读
       // 最终清理
       .trim();
   }
@@ -252,7 +239,13 @@ export class JuyaH5Maker {
    */
   convert(markdown: string, compress: boolean = true): { html: string; sizeKB: number } {
     const rawHtml = marked.parse(markdown) as string;
-    const html = compress ? this.compressHTML(rawHtml) : rawHtml;
+    
+    // 包装在标准容器中，添加必要的标识
+    const wrappedHtml = `<section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.style}">
+      ${rawHtml}
+    </section>`;
+    
+    const html = compress ? this.compressHTML(wrappedHtml) : wrappedHtml;
     const sizeKB = this.calculateSizeKB(html);
     
     return { html, sizeKB };
@@ -278,7 +271,9 @@ export class JuyaH5Maker {
           */
          private renderTableHeader(header: any[]): string {
            const cells = header.map(cell => {
-             const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
+             const cellContent = cell.tokens
+               ? this.withInlineContext('plain', () => this.parseTokens(cell.tokens))
+               : this.escapeHtml(cell.text ?? '');
              return `<th style="${JuyaStyles.th.style}">
                <section>
                  <span leaf="">${cellContent}</span>
@@ -297,9 +292,13 @@ export class JuyaH5Maker {
     const rowStyle = isEven ? JuyaStyles.trEven.style : JuyaStyles.trOdd.style;
     
     const cells = row.map(cell => {
-      const cellContent = cell.tokens ? this.parseTokens(cell.tokens) : cell.text;
+      const cellContent = cell.tokens
+        ? this.withInlineContext('plain', () => this.parseTokens(cell.tokens))
+        : this.escapeHtml(cell.text ?? '');
       return `<td style="${JuyaStyles.td.style}">
-        <span leaf="">${cellContent}</span>
+        <section>
+          <span leaf="">${cellContent}</span>
+        </section>
       </td>`;
     }).join('');
     
