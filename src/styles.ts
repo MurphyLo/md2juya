@@ -8,7 +8,8 @@ export const JuyaStyles = {
   container: {
     style: `margin: 0px; padding: 20px 0px; background: none 0% 0% / auto no-repeat scroll padding-box border-box, none rgb(250, 249, 245); width: auto; font-family: Optima, "Microsoft YaHei", PingFangSC-regular, serif; font-size: 16px; color: rgb(0, 0, 0); line-height: 1.5em; word-spacing: 0em; letter-spacing: 0em; word-break: break-word; overflow-wrap: break-word; text-align: left;`,
     className: 'rich_media_content js_underline_content autoTypeSetting24psection',
-    dataAttr: 'data-tool="mdnice编辑器" data-website="https://www.mdnice.com"'
+    dataAttr: 'data-tool="mdnice编辑器" data-website="https://www.mdnice.com"',
+    innerStyle: `margin: 0px; padding: 20px 0px; background: none 0% 0% / auto no-repeat scroll padding-box border-box, none rgb(250, 249, 245); width: auto; font-family: Optima, "Microsoft YaHei", PingFangSC-regular, serif; font-size: 16px; color: rgb(0, 0, 0); line-height: 1.5em; word-spacing: 0em; letter-spacing: 0em; word-break: break-word; overflow-wrap: break-word; text-align: left;`
   },
 
   // H1标题样式  
@@ -81,12 +82,12 @@ export const JuyaStyles = {
 
   // 表格容器样式
   tableContainer: {
-    style: `padding: 0px; margin: 15px 10px; border-radius: 12px; border: 1px solid rgb(209, 207, 204); overflow: hidden;`
+    style: `padding: 0px; margin: 15px 10px; border-radius: 12px; border: 1px solid rgb(209, 207, 204); overflow: hidden; background-color: rgb(253, 252, 250);`
   },
 
   // 表格样式
   table: {
-    style: `display: table; text-align: left; width: 100%; border-collapse: collapse; border-spacing: 0px; table-layout: fixed;`
+    style: `display: table; text-align: left; width: 100%; border-collapse: collapse; border-spacing: 0px; table-layout: fixed; background-color: rgb(253, 252, 250);`
   },
 
   // 表头样式

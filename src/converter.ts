@@ -24,9 +24,7 @@ export class JuyaH5Maker {
       if (depth === 1) {
         return `<h1 style="${JuyaStyles.h1.style}">
           <span style="display: none;"></span>
-          <span style="${JuyaStyles.h1.span}">
-            <span leaf="">${text}</span>
-          </span>
+          <span style="${JuyaStyles.h1.span}">${text}</span>
           <span style="display: none;"></span>
         </h1>`;
       }
@@ -34,9 +32,7 @@ export class JuyaH5Maker {
       if (depth === 2) {
         return `<h2 style="${JuyaStyles.h2.style}">
           <span style="display: none;"></span>
-          <span style="${JuyaStyles.h2.span}">
-            <span leaf="">${text}</span>
-          </span>
+          <span style="${JuyaStyles.h2.span}">${text}</span>
           <span style="display: none;"></span>
         </h2>`;
       }
@@ -47,9 +43,7 @@ export class JuyaH5Maker {
     // 段落渲染
     renderer.paragraph = ({ tokens }: any) => {
       const text = this.withInlineContext('plain', () => this.parseTokens(tokens));
-      return `<p style="${JuyaStyles.p.style}">
-        <span leaf="">${text}</span>
-      </p>`;
+      return `<p style="${JuyaStyles.p.style}">${text}</p>`;
     };
 
     // 列表渲染
@@ -70,10 +64,7 @@ export class JuyaH5Maker {
       parsedContent = this.compactHTML(parsedContent);
       
       return `<blockquote style="${JuyaStyles.blockquote.style}">
-        <span style="display: none;"></span>
-        <p style="${JuyaStyles.blockquote.p}">
-          ${parsedContent}
-        </p>
+        <p style="${JuyaStyles.blockquote.p}">${parsedContent}</p>
       </blockquote>`;
     };
 
@@ -90,9 +81,7 @@ export class JuyaH5Maker {
     // 图片渲染
     renderer.image = ({ href, title, text }: any) => {
       return `<figure style="${JuyaStyles.figure.style}">
-        <span leaf="">
-          <img style="${JuyaStyles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
-        </span>
+        <img style="${JuyaStyles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
       </figure>`;
     };
 
@@ -104,9 +93,7 @@ export class JuyaH5Maker {
     // 强调文本渲染
     renderer.strong = ({ tokens }: any) => {
       const text = this.parseTokens(tokens);
-      return `<strong style="${JuyaStyles.strong.style}">
-        <span leaf="">${text}</span>
-      </strong>`;
+      return `<strong style="${JuyaStyles.strong.style}">${text}</strong>`;
     };
 
                // 表格渲染
@@ -141,7 +128,13 @@ export class JuyaH5Maker {
       if (token.type === 'strong') {
         return this.renderStrong(token);
       }
-      return token.raw || token.text || '';
+      if (token.type === 'text' || token.type === 'html') {
+        return token.raw || token.text || '';
+      }
+      if (token.type === 'paragraph') {
+        return this.withInlineContext('plain', () => this.parseTokens(token.tokens || []));
+      }
+      return marked.parseInline(token.raw || token.text || '') as string;
     }).join('');
   }
 
@@ -150,9 +143,7 @@ export class JuyaH5Maker {
    */
   private renderImage(token: any): string {
     return `<figure style="${JuyaStyles.figure.style}">
-      <span leaf="">
-        <img style="${JuyaStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
-      </span>
+      <img style="${JuyaStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
     </figure>`;
   }
 
@@ -163,7 +154,7 @@ export class JuyaH5Maker {
     const style = this.inlineContext === 'plain'
       ? JuyaStyles.inlineCodePlain.style
       : JuyaStyles.inlineCode.style;
-    return `<code style="${style}"><span leaf="">${this.escapeHtml(token.text)}</span></code>`;
+    return `<code style="${style}">${this.escapeHtml(token.text)}</code>`;
   }
 
   /**
@@ -171,7 +162,7 @@ export class JuyaH5Maker {
    */
   private renderStrong(token: any): string {
     const text = token.tokens ? this.parseTokens(token.tokens) : token.text;
-    return `<strong style="${JuyaStyles.strong.style}"><span leaf="">${text}</span></strong>`;
+    return `<strong style="${JuyaStyles.strong.style}">${text}</strong>`;
   }
 
   /**
@@ -223,9 +214,11 @@ export class JuyaH5Maker {
     const rawHtml = marked.parse(markdown) as string;
     
     // 包装在标准容器中，添加必要的标识
-    const html = `<section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.style}">
-      ${rawHtml}
-    </section>`.trim();
+    const html = `<div class="${JuyaStyles.container.className}" style="${JuyaStyles.container.style}">
+      <section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.innerStyle}">
+        ${rawHtml}
+      </section>
+    </div>`.trim();
     
     const sizeKB = this.calculateSizeKB(html);
     
