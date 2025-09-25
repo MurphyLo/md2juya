@@ -15,31 +15,22 @@ if (args.length === 0) {
 md2juya - Convert Markdown to Juya AI Daily WeChat H5 format
 
 Usage:
-  md2juya <input.md> [output.html] [--no-compress]
-
-Options:
-  --no-compress    禁用HTML压缩（默认启用压缩以减小文件体积）
+  md2juya <input.md> [output.html]
 
 Examples:
-  md2juya article.md                    # 生成 article_juya.html（压缩）
-  md2juya article.md custom.html        # 生成 custom.html（压缩）
-  md2juya article.md --no-compress      # 生成未压缩的 article_juya.html
+  md2juya article.md                    # 生成 article_juya.html
+  md2juya article.md custom.html        # 生成 custom.html
 `);
   process.exit(0);
 }
 
 // 解析命令行参数
-const noCompressIndex = args.indexOf('--no-compress');
-const shouldCompress = noCompressIndex === -1;
-
-// 过滤掉选项参数，获取文件参数
-const fileArgs = args.filter(arg => !arg.startsWith('--'));
-const inputFile = fileArgs[0]!;
-const outputFile = fileArgs[1] || inputFile.replace(/\.md$/, '_juya.html');
+const inputFile = args[0]!;
+const outputFile = args[1] || inputFile.replace(/\.md$/, '_juya.html');
 
 try {
   const markdown = readFileSync(inputFile, 'utf-8');
-  const { html, sizeKB } = convertToJuyaH5(markdown, shouldCompress);
+  const { html, sizeKB } = convertToJuyaH5(markdown);
   
   // 创建完整的HTML文档用于预览（实际使用时只需要html部分）
   const fullHtml = `<!DOCTYPE html>
@@ -58,12 +49,11 @@ try {
 
   writeFileSync(outputFile, fullHtml);
   console.log(`✅ 转换完成: ${inputFile} -> ${outputFile}`);
-  console.log(`📦 压缩状态: ${shouldCompress ? '已启用' : '已禁用'}`);
   console.log(`📊 内容大小: ${sizeKB}KB`);
   
   // 检查是否超过微信1MB限制
   if (sizeKB > 1024) {
-    console.log(`⚠️  警告: 内容大小超过微信推送1MB限制！建议启用压缩或减少内容。`);
+    console.log(`⚠️  警告: 内容大小超过微信推送1MB限制！建议减少内容。`);
   }
   
   // 输出纯HTML内容片段信息（用于API调用）

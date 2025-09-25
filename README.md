@@ -25,10 +25,10 @@
 # 安装为全局命令
 npm install -g md2juya
 
-# 基础转换（默认压缩HTML，生成 input_juya.html）
+# 基础转换（生成 input_juya.html）
 md2juya input.md
 
-# 指定输出文件名（默认压缩，使用--no-compress参数禁用HTML压缩）
+# 指定输出文件名
 md2juya input.md output.html
 ```
 
@@ -77,18 +77,18 @@ OpenAI 宣布 `ChatGPT Projects` 功能现已向所有 **Free** 用户开放。
 该设备由常用 `micro-LED`、智能手机镜头与传感器组装成，当前原型包含 **256** 个数量参数，后续计划每两年迭代一次并扩展至百万至千万级数量。
 `;
 
-// 获取HTML内容和KB大小（默认压缩）
-const { html, sizeKB } = convertToJuyaH5(markdown, true);
+// 获取HTML内容和KB大小
+const { html, sizeKB } = convertToJuyaH5(markdown);
 
 // 检查微信1MB限制
 if (sizeKB > 1024) {
-  console.warn('内容超过微信1MB限制，建议启用压缩或减少内容');
+  console.warn('内容超过微信1MB限制，建议减少内容');
 }
 
 // 用于微信公众号API调用
 const articleData = {
   title: "AI早报 2025-09-04",
-  content: html,  // 纯HTML片段（默认压缩）
+  content: html,  // 纯HTML片段
   // ... 其他API字段
 };
 ```

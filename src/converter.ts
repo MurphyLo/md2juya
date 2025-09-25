@@ -200,27 +200,10 @@ export class JuyaH5Maker {
   }
 
   /**
-   * 优化HTML压缩 - 避免过度压缩可能影响样式解析
-   */
-  private compressHTML(html: string): string {
-    return html
-      // 移除HTML注释
-      .replace(/<!--[\s\S]*?-->/g, '')
-      // 移除标签间多余的空白，但保留单个空格
-      .replace(/>\s{2,}</g, '> <')
-      // 移除style属性中的多余空格
-      .replace(/style="\s+/g, 'style="')
-      .replace(/;\s+/g, '; ')  // 保留一个空格便于阅读
-      .replace(/:\s+/g, ': ')  // 保留一个空格便于阅读
-      // 最终清理
-      .trim();
-  }
-
-  /**
-   * 紧凑化HTML（保持向后兼容）
+   * 紧凑化HTML（保持内容结构不变）
    */
   private compactHTML(html: string): string {
-    return this.compressHTML(html);
+    return html.trim();
   }
 
   /**
@@ -234,18 +217,16 @@ export class JuyaH5Maker {
   /**
    * 转换Markdown为微信H5格式HTML
    * @param markdown - Markdown源码  
-   * @param compress - 是否压缩HTML（默认true，减小文件体积）
    * @returns 包含HTML内容和KB大小的对象（HTML内容符合微信接口content字段要求）
    */
-  convert(markdown: string, compress: boolean = true): { html: string; sizeKB: number } {
+  convert(markdown: string): { html: string; sizeKB: number } {
     const rawHtml = marked.parse(markdown) as string;
     
     // 包装在标准容器中，添加必要的标识
-    const wrappedHtml = `<section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.style}">
+    const html = `<section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.style}">
       ${rawHtml}
-    </section>`;
+    </section>`.trim();
     
-    const html = compress ? this.compressHTML(wrappedHtml) : wrappedHtml;
     const sizeKB = this.calculateSizeKB(html);
     
     return { html, sizeKB };
@@ -306,7 +287,7 @@ export class JuyaH5Maker {
   }
 }
 
-export function convertToJuyaH5(markdown: string, compress: boolean = true): { html: string; sizeKB: number } {
+export function convertToJuyaH5(markdown: string): { html: string; sizeKB: number } {
   const maker = new JuyaH5Maker();
-  return maker.convert(markdown, compress);
+  return maker.convert(markdown);
 }
