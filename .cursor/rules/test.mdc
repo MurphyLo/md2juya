@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+测试新样式或验证修改的样式效果，请使用example.md文件或编辑该文件并添加新样式后编译运行。

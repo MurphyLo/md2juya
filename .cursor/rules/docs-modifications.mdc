@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+不要编辑额外的多余的项目文档，能直接在对话说明的问题直接在对话说明，如果一定需要创建文档内容，直接编辑项目文档README.md。

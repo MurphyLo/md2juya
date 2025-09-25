@@ -7,6 +7,7 @@ import { JuyaStyles } from './styles.js';
  */
 export class JuyaH5Maker {
   private listItemCounter = 0;
+  private inlineContext: 'default' | 'plain' = 'default';
   
   constructor() {
     this.setupMarkedRenderer();
@@ -20,7 +21,7 @@ export class JuyaH5Maker {
     
     // H1标题渲染
     renderer.heading = ({ tokens, depth }: any) => {
-      const text = this.parseTokens(tokens);
+      const text = this.withInlineContext('default', () => this.parseTokens(tokens));
       if (depth === 1) {
         return `<h1 style="${JuyaStyles.h1.style}">
           <span style="display: none;"></span>
@@ -32,15 +33,10 @@ export class JuyaH5Maker {
       }
       
       if (depth === 2) {
-        // 支持包含 U+2060 word joiner 的 #编号格式 (#⁠数字)
-        const match = text.match(/^(.*?)\s*#[\u2060]*(\d+)$/);
-        const title = match ? match[1]?.trim() : text;
-        const tagNum = match ? match[2] : '';
-        
         return `<h2 style="${JuyaStyles.h2.style}">
           <span style="display: none;"></span>
           <span style="${JuyaStyles.h2.span}">
-            <span leaf="">${title}</span>${tagNum ? `&nbsp;<code style="${JuyaStyles.h2.tag}"><span leaf="">#${tagNum}</span></code>` : ''}
+            <span leaf="">${text}</span>
           </span>
           <span style="display: none;"></span>
         </h2>`;
@@ -51,7 +47,7 @@ export class JuyaH5Maker {
 
     // 段落渲染
     renderer.paragraph = ({ tokens }: any) => {
-      const text = this.parseTokens(tokens);
+      const text = this.withInlineContext('plain', () => this.parseTokens(tokens));
       return `<p style="${JuyaStyles.p.style}">
         <span leaf="">${text}</span>
       </p>`;
@@ -59,7 +55,6 @@ export class JuyaH5Maker {
 
     // 列表渲染
     renderer.list = ({ items }: any) => {
-      this.listItemCounter = 0;
       const body = items.map((item: any) => this.renderListItem(item)).join('');
       return `<ul class="${JuyaStyles.ul.className}" style="${JuyaStyles.ul.style}">
         ${body}
@@ -71,7 +66,7 @@ export class JuyaH5Maker {
       // 获取原始文本内容
       const rawText = tokens.map((token: any) => token.raw || token.text || '').join('');
       // 重新解析这个文本以确保markdown被正确处理
-      let parsedContent = marked.parseInline(rawText) as string;
+      let parsedContent = this.withInlineContext('plain', () => marked.parseInline(rawText) as string);
       // 移除多余的换行和空格，保持紧凑格式
       parsedContent = this.compactHTML(parsedContent);
       
@@ -90,9 +85,7 @@ export class JuyaH5Maker {
 
     // 内联代码渲染
     renderer.codespan = ({ text }: any) => {
-      return `<code style="${JuyaStyles.inlineCode.style}">
-        <span leaf="">${this.escapeHtml(text)}</span>
-      </code>`;
+      return this.renderInlineCode({ text });
     };
 
     // 图片渲染
@@ -138,16 +131,12 @@ export class JuyaH5Maker {
   /**
    * 解析tokens为文本
    */
-  private parseTokens(tokens: any[], isListItem = false): string {
-    return tokens.map((token: any, index: number) => {
+  private parseTokens(tokens: any[]): string {
+    return tokens.map((token: any) => {
       if (token.type === 'image') {
         return this.renderImage(token);
       }
       if (token.type === 'codespan') {
-        // 在列表项中，如果是最后一个token且匹配 #x 格式（支持 U+2060 word joiner），不渲染为代码标签
-        if (isListItem && index === tokens.length - 1 && /^#[\u2060]*\d+$/.test(token.text)) {
-          return token.raw || token.text;
-        }
         return this.renderInlineCode(token);
       }
       if (token.type === 'strong') {
@@ -172,14 +161,17 @@ export class JuyaH5Maker {
    * 渲染内联代码token
    */
   private renderInlineCode(token: any): string {
-    return `<code style="${JuyaStyles.inlineCode.style}"><span leaf="">${this.escapeHtml(token.text)}</span></code>`;
+    const style = this.inlineContext === 'plain'
+      ? JuyaStyles.inlineCodePlain.style
+      : JuyaStyles.inlineCode.style;
+    return `<code style="${style}"><span leaf="">${this.escapeHtml(token.text)}</span></code>`;
   }
 
   /**
    * 渲染强调文本token
    */
   private renderStrong(token: any): string {
-    const text = token.tokens ? this.parseTokens(token.tokens, false) : token.text;
+    const text = token.tokens ? this.parseTokens(token.tokens) : token.text;
     return `<strong style="${JuyaStyles.strong.style}"><span leaf="">${text}</span></strong>`;
   }
 
@@ -187,42 +179,24 @@ export class JuyaH5Maker {
    * 渲染列表项
    */
   private renderListItem(item: any): string {
-    this.listItemCounter++;
-
-    
-    // 获取原始文本并重新解析以确保markdown被正确处理
     const rawText = item.tokens ? item.tokens.map((t: any) => t.raw || t.text || '').join('') : '';
-    let parsedText = marked.parseInline(rawText) as string;
-    // 移除多余的换行和空格，保持紧凑格式
+    let parsedText = this.withInlineContext('default', () => marked.parseInline(rawText) as string);
     parsedText = this.compactHTML(parsedText);
-    
-    // 检查原始文本中是否已经包含 #x 格式的标签（支持 U+2060 word joiner）
-    const tagMatch = rawText.match(/(.+?)\s*#[\u2060]*(\d+)$/);
-    if (tagMatch) {
-      // 如果已有标签，提取内容和标签号，并重新解析内容部分
-      const content = tagMatch[1]?.trim();
-      const tagNum = tagMatch[2];
-      let parsedContent = marked.parseInline(content) as string;
-      parsedContent = this.compactHTML(parsedContent);
-      
-                return `<li>
-        <section style="${JuyaStyles.li.style}">
-          ${parsedContent}
-          <code style="${JuyaStyles.li.tag}">
-            <span leaf="">#${tagNum}</span>
-          </code>
-        </section>
-      </li>`;
-    } else {
-      // 如果没有标签，自动添加序号标签
-                return `<li>
-        <section style="${JuyaStyles.li.style}">
-          ${parsedText}
-          <code style="${JuyaStyles.li.tag}">
-            <span leaf="">#${this.listItemCounter}</span>
-          </code>
-        </section>
-      </li>`;
+
+    return `<li>
+      <section style="${JuyaStyles.li.style}">
+        ${parsedText}
+      </section>
+    </li>`;
+  }
+
+  private withInlineContext<T>(context: 'default' | 'plain', fn: () => T): T {
+    const previous = this.inlineContext;
+    this.inlineContext = context;
+    try {
+      return fn();
+    } finally {
+      this.inlineContext = previous;
     }
   }
 
