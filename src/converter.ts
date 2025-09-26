@@ -2,6 +2,112 @@ import { marked } from 'marked';
 import { JuyaStyles } from './styles.js';
 
 /**
+ * 配置自定义 tokenizer，修复中文符号作为边界的加粗问题
+ * 基于 marked.js 16.2.1 的修改方案 - 扩展标点符号检查以兼容中文符号
+ */
+function setupChineseBoldFix() {
+  marked.use({
+    tokenizer: {
+      emStrong(src: string, maskedSrc: string, prevChar = '') {
+        // 优化的星号匹配：只处理简单的双星号，避免与三星号冲突
+        // 只在开头是两个星号且第三个字符不是星号时匹配
+        if (src.startsWith('**') && src[2] !== '*') {
+          const strongMatch = src.match(/^\*\*([\s\S]+?)\*\*/);
+          if (strongMatch && strongMatch[1]) {
+            const text = strongMatch[1];
+            return {
+              type: 'strong',
+              raw: strongMatch[0],
+              text,
+              tokens: this.lexer.inlineTokens(text),
+            };
+          }
+        }
+
+        // 优化的单星号匹配：只在开头是单星号且第二个字符不是星号时匹配  
+        if (src.startsWith('*') && src[1] !== '*') {
+          const emMatch = src.match(/^\*([\s\S]+?)\*/);
+          if (emMatch && emMatch[1]) {
+            const text = emMatch[1];
+            return {
+              type: 'em',
+              raw: emMatch[0],
+              text,
+              tokens: this.lexer.inlineTokens(text),
+            };
+          }
+        }
+
+        // 如果没有匹配到，fallback到原始逻辑
+        let match = this.rules.inline.emStrongLDelim.exec(src);
+        if (!match) return;
+
+        // _ can't be between two alphanumerics. \p{L}\p{N} includes non-english alphabet/numbers as well
+        if (match[3] && prevChar.match(this.rules.other.unicodeAlphaNumeric)) return;
+
+        const nextChar = match[1] || match[2] || '';
+
+        if (!nextChar || !prevChar || this.rules.inline.punctuation.exec(prevChar)) {
+          // 原始的完整逻辑作为fallback
+          const lLength = [...match[0]].length - 1;
+          let rDelim, rLength, delimTotal = lLength, midDelimTotal = 0;
+
+          const endReg = match[0][0] === '*' ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+          endReg.lastIndex = 0;
+
+          maskedSrc = maskedSrc.slice(-1 * src.length + lLength);
+
+          while ((match = endReg.exec(maskedSrc)) != null) {
+            rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
+
+            if (!rDelim) continue;
+
+            rLength = [...rDelim].length;
+
+            if (match[3] || match[4]) {
+              delimTotal += rLength;
+              continue;
+            } else if (match[5] || match[6]) {
+              if (lLength % 3 && !((lLength + rLength) % 3)) {
+                midDelimTotal += rLength;
+                continue;
+              }
+            }
+
+            delimTotal -= rLength;
+
+            if (delimTotal > 0) continue;
+
+            rLength = Math.min(rLength, rLength + delimTotal + midDelimTotal);
+            const matchChars = [...match[0]];
+            const lastCharLength = matchChars.length > 0 && matchChars[0] ? matchChars[0].length : 1;
+            const raw = src.slice(0, lLength + match.index + lastCharLength + rLength);
+
+            if (Math.min(lLength, rLength) % 2) {
+              const text = raw.slice(1, -1);
+              return {
+                type: 'em',
+                raw,
+                text,
+                tokens: this.lexer.inlineTokens(text),
+              };
+            }
+
+            const text = raw.slice(2, -2);
+            return {
+              type: 'strong',
+              raw,
+              text,
+              tokens: this.lexer.inlineTokens(text),
+            };
+          }
+        }
+      },
+    }
+  });
+}
+
+/**
  * Juya AI日报H5版式制作器
  * 直接的数据驱动渲染，无复杂抽象层
  */
@@ -9,6 +115,7 @@ export class JuyaH5Maker {
   private inlineContext: 'default' | 'plain' = 'default';
   
   constructor() {
+    setupChineseBoldFix(); // 首先配置中文加粗修复
     this.setupMarkedRenderer();
   }
 
