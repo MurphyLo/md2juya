@@ -66,13 +66,13 @@ export const JuyaStyles = {
 
   // 图片样式
   figure: {
-    style: `margin: 10px; padding: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;`,
+    style: `margin: 30px; padding: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;`,
     img: `display: block; margin: 0px auto; max-width: 100%; border-style: none; border-width: 3px; border-color: rgba(0, 0, 0, 0.4); object-fit: fill; box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px; border-radius: 12px; overflow: hidden;`
   },
 
   // 水平分割线样式
   hr: {
-    style: `margin: 30px 10px 10px; padding: 0px; border-top: 1px dashed rgb(184, 184, 184); border-bottom: none; border-left: none; border-right: none; background-color: rgba(0, 0, 0, 0); background-image: none; background-origin: padding-box; background-position: left top; background-repeat: no-repeat; background-size: auto; width: auto; height: auto;`
+    style: `margin: 20px 10px 10px; padding: 0px; border-top: 1px dashed rgb(184, 184, 184); border-bottom: none; border-left: none; border-right: none; background-color: rgba(0, 0, 0, 0); background-image: none; background-origin: padding-box; background-position: left top; background-repeat: no-repeat; background-size: auto; width: auto; height: auto;`
   },
 
   // 强调文本样式
@@ -82,7 +82,7 @@ export const JuyaStyles = {
 
   // 表格容器样式
   tableContainer: {
-    style: `padding: 0px; margin: 15px 10px; border-radius: 12px; border: 1px solid rgb(209, 207, 204); overflow: hidden; background-color: rgb(253, 252, 250);`
+    style: `padding: 0px; margin: 10px 15px; border-radius: 12px; border: 1px solid rgb(209, 207, 204); overflow: hidden; background-color: rgb(253, 252, 250);`
   },
 
   // 表格样式

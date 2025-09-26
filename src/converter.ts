@@ -42,6 +42,9 @@ export class JuyaH5Maker {
 
     // 段落渲染
     renderer.paragraph = ({ tokens }: any) => {
+      if (tokens && tokens.length === 1 && tokens[0].type === 'image') {
+        return this.renderImage(tokens[0]);
+      }
       const text = this.withInlineContext('plain', () => this.parseTokens(tokens));
       return `<p style="${JuyaStyles.p.style}">${text}</p>`;
     };
@@ -132,6 +135,9 @@ export class JuyaH5Maker {
         return token.raw || token.text || '';
       }
       if (token.type === 'paragraph') {
+        if (token.tokens && token.tokens.length === 1 && token.tokens[0].type === 'image') {
+          return this.renderImage(token.tokens[0]);
+        }
         return this.withInlineContext('plain', () => this.parseTokens(token.tokens || []));
       }
       return marked.parseInline(token.raw || token.text || '') as string;
@@ -142,6 +148,12 @@ export class JuyaH5Maker {
    * 渲染图片token
    */
   private renderImage(token: any): string {
+    if (token.type === 'paragraph') {
+      const imageToken = (token.tokens || []).find((t: any) => t.type === 'image');
+      if (imageToken) {
+        return this.renderImage(imageToken);
+      }
+    }
     return `<figure style="${JuyaStyles.figure.style}">
       <img style="${JuyaStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
     </figure>`;
