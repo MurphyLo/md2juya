@@ -52,9 +52,7 @@ export class JuyaH5Maker {
     // 列表渲染
     renderer.list = ({ items }: any) => {
       const body = items.map((item: any) => this.renderListItem(item)).join('');
-      return `<ul class="${JuyaStyles.ul.className}" style="${JuyaStyles.ul.style}">
-        ${body}
-      </ul>`;
+      return `<ul class="${JuyaStyles.ul.className}" style="${JuyaStyles.ul.style}">${body}</ul>`;
     };
 
     // 引用块渲染
@@ -131,7 +129,13 @@ export class JuyaH5Maker {
       if (token.type === 'strong') {
         return this.renderStrong(token);
       }
-      if (token.type === 'text' || token.type === 'html') {
+      if (token.type === 'text') {
+        if (token.tokens && token.tokens.length) {
+          return this.parseTokens(token.tokens);
+        }
+        return token.raw || token.text || '';
+      }
+      if (token.type === 'html') {
         return token.raw || token.text || '';
       }
       if (token.type === 'paragraph') {
@@ -181,15 +185,17 @@ export class JuyaH5Maker {
    * 渲染列表项
    */
   private renderListItem(item: any): string {
-    const rawText = item.tokens ? item.tokens.map((t: any) => t.raw || t.text || '').join('') : '';
-    let parsedText = this.withInlineContext('default', () => marked.parseInline(rawText) as string);
-    parsedText = this.compactHTML(parsedText);
+    const parsedText = this.withInlineContext('default', () => this.parseTokens(this.normalizeListItemTokens(item.tokens || [])));
+    const compacted = this.compactHTML(parsedText);
 
-    return `<li style="${JuyaStyles.li.style}">
-      <section>
-        ${parsedText}
-      </section>
-    </li>`;
+    return `<li style="${JuyaStyles.li.style}"><section>${compacted}</section></li>`;
+  }
+
+  private normalizeListItemTokens(tokens: any[]): any[] {
+    if (tokens.length === 1 && tokens[0].type === 'text' && tokens[0].tokens && tokens[0].tokens.length) {
+      return tokens[0].tokens;
+    }
+    return tokens;
   }
 
   private withInlineContext<T>(context: 'default' | 'plain', fn: () => T): T {
