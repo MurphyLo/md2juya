@@ -1,6 +1,6 @@
 {
   "name": "md2juya",
-  "version": "0.11.5",
+  "version": "0.11.6",
   "description": "Convert Markdown to Juya AI Daily WeChat H5",
   "main": "dist/index.js",
   "bin": {

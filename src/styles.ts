@@ -66,7 +66,7 @@ export const JuyaStyles = {
 
   // 图片样式
   figure: {
-    style: `margin: 30px; padding: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;`,
+    style: `margin: 30px 10px; padding: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;`,
     img: `display: block; margin: 0px auto; max-width: 100%; border-style: none; border-width: 3px; border-color: rgba(0, 0, 0, 0.4); object-fit: fill; box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px; border-radius: 12px; overflow: hidden;`
   },
 
