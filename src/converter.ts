@@ -292,10 +292,21 @@ export class JuyaH5Maker {
    * 渲染列表项
    */
   private renderListItem(item: any): string {
-    const parsedText = this.withInlineContext('default', () => this.parseTokens(this.normalizeListItemTokens(item.tokens || [])));
+    const normalizedTokens = this.normalizeListItemTokens(item.tokens || []);
+    const parsedText = this.withInlineContext('default', () => this.parseTokens(normalizedTokens));
     const compacted = this.compactHTML(parsedText);
 
-    return `<li style="${JuyaStyles.li.style}"><section>${compacted}</section></li>`;
+    // 检测是否以反引号开头 - 如果是则不显示圆点且移除边距(使用负边距抵消ul的padding)
+    const firstToken = normalizedTokens[0];
+    const startsWithBacktick = firstToken && 
+      (firstToken.type === 'codespan' || 
+       (firstToken.type === 'text' && firstToken.text && firstToken.text.trim().startsWith('`')));
+    
+    const liStyle = startsWithBacktick 
+      ? `${JuyaStyles.li.style}list-style-type: none; margin-left: -18px; padding-left: 0;`
+      : JuyaStyles.li.style;
+
+    return `<li style="${liStyle}"><section>${compacted}</section></li>`;
   }
 
   private normalizeListItemTokens(tokens: any[]): any[] {
