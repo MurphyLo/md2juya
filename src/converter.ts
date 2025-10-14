@@ -347,7 +347,14 @@ export class JuyaH5Maker {
    * @returns 包含HTML内容和KB大小的对象（HTML内容符合微信接口content字段要求）
    */
   convert(markdown: string): { html: string; sizeKB: number } {
-    const rawHtml = marked.parse(markdown) as string;
+    let rawHtml = marked.parse(markdown) as string;
+    
+    // 修正第一个图片的上边距问题：开头的图片不需要上边距
+    // 直接替换第一个figure的margin，从 "margin: 30px 10px" 改为 "margin: 0px 10px 30px"
+    rawHtml = rawHtml.replace(
+      /^(<figure style="[^"]*?)margin:\s*30px\s+10px/,
+      '$1margin: 0px 10px 30px'
+    );
     
     // 包装在标准容器中，添加必要的标识
     const html = `<div class="${JuyaStyles.container.className}" style="${JuyaStyles.container.style}">
