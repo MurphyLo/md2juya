@@ -32,7 +32,7 @@ export const JuyaStyles = {
 
   // 无序列表样式
   ul: {
-    style: `list-style-type: disc; margin: 8px 15px; padding: 0px 18px; color: rgb(0, 0, 0);`,
+    style: `list-style-type: disc; margin: 8px 15px 8px 15px; padding: 0px 0px 0px 18px; color: rgb(0, 0, 0);`,
     className: 'list-paddingleft-1'
   },
 
