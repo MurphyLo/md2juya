@@ -41,6 +41,11 @@ export const JuyaStyles = {
     style: `margin: 5px 0px; color: rgb(0, 0, 0); font-size: 14px; line-height: 1.8em; letter-spacing: 0.06em; text-align: left; font-weight: normal;`,
     tag: `background-attachment: scroll; background-clip: border-box; background-image: none; background-origin: padding-box; background-position: left top; background-repeat: no-repeat; background-size: auto; width: auto; margin: 0px 2px; overflow-wrap: break-word; word-break: break-all; font-size: 0.9em; font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; padding: 2px 4px; vertical-align: baseline; transform: translateY(-2px); background-color: rgb(253, 252, 250); color: rgb(201, 100, 66); border-width: 0.5px; border-style: solid; border-color: rgb(209, 207, 204); border-radius: 6px;`
   },
+  liFlex: {
+    container: `display: flex; align-items: baseline; margin: 0px; padding: 0px;`,
+    label: `display: inline-block; flex: 0 0 auto; margin: 0px; line-height: inherit;`,
+    content: `display: block; flex: 1 1 auto; margin: 0px 0px 0px 2px; word-break: break-word; overflow-wrap: break-word; font-size: inherit; line-height: inherit;`
+  },
 
   // 引用块样式
   blockquote: {

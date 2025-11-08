@@ -295,7 +295,7 @@ export class JuyaH5Maker {
     const normalizedTokens = this.normalizeListItemTokens(item.tokens || []);
     const parsedText = this.withInlineContext('default', () => this.parseTokens(normalizedTokens));
     const compacted = this.compactHTML(parsedText);
-
+    
     // 检测是否以反引号开头 - 如果是则不显示圆点且移除边距(使用负边距抵消ul的padding)
     const firstToken = normalizedTokens[0];
     const startsWithBacktick = firstToken && 
@@ -305,6 +305,20 @@ export class JuyaH5Maker {
     const liStyle = startsWithBacktick 
       ? `${JuyaStyles.li.style}list-style-type: none; margin-left: -18px; padding-left: 0;`
       : JuyaStyles.li.style;
+
+    if (startsWithBacktick) {
+      const codeMatch = compacted.match(/^(<code\b[^>]*>[\s\S]*?<\/code>)(\s*)([\s\S]*)$/);
+      if (codeMatch) {
+        const labelHtml = codeMatch[1];
+        const restRaw = codeMatch[3] || '';
+        const restContent = restRaw ? this.compactHTML(restRaw) : '';
+        const labelWrapper = `<div style="${JuyaStyles.liFlex.label}">${labelHtml}</div>`;
+        const contentWrapper = restContent
+          ? `<div style="${JuyaStyles.liFlex.content}">${restContent}</div>`
+          : '';
+        return `<li style="${liStyle}"><section style="${JuyaStyles.liFlex.container}">${labelWrapper}${contentWrapper}</section></li>`;
+      }
+    }
 
     return `<li style="${liStyle}"><section>${compacted}</section></li>`;
   }
