@@ -144,6 +144,11 @@ export class JuyaH5Maker {
         </h2>`;
       }
       
+      if (depth === 3) {
+        // 微信编辑器会删除空 span；不换行空格用于保留两侧装饰节点。
+        return `<h3 style="${JuyaStyles.h3.style}"><span aria-hidden="true" style="${JuyaStyles.h3.marker}">&nbsp;</span><span style="${JuyaStyles.h3.span}">${text}</span><span aria-hidden="true" style="${JuyaStyles.h3.line}">&nbsp;</span></h3>`;
+      }
+
       return `<h${depth}>${text}</h${depth}>`;
     };
 

@@ -25,6 +25,14 @@ export const JuyaStyles = {
     tag: `font-size: 0.8em; font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; padding: 2px 4px; vertical-align: 1px; background-color: rgb(253, 252, 250); color: rgb(201, 100, 66); border-width: 0.5px; border-style: solid; border-color: rgb(209, 207, 204); border-radius: 6px; font-weight: normal;`
   },
 
+  // H3：概览分节及正文小标题，竖线、文字与右侧横线垂直居中
+  h3: {
+    style: `display: flex; align-items: center; margin: 12px 18px 6px; padding: 0; font-size: 14px; line-height: 22px; font-weight: 600; letter-spacing: 0.08em; color: #795548;`,
+    marker: `display: block; flex: 0 0 3px; height: 14px; margin-right: 9px; border-radius: 2px; background-color: #c96442; font-size: 0; line-height: 0; overflow: hidden;`,
+    span: `display: block; min-width: 0;`,
+    line: `display: block; flex: 1 0 16px; height: 1px; margin-left: 12px; background-color: #e3dfd5; font-size: 0; line-height: 0; overflow: hidden;`
+  },
+
   // 段落样式
   p: {
     style: `color: rgb(20, 20, 19); font-size: 15px; line-height: 1.8em; letter-spacing: 0.06em; text-align: left; text-indent: 0em; margin: 0px 18px; padding: 5px 0px;`
