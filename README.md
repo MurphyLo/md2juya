@@ -99,11 +99,11 @@ const articleData = {
 <table>
 <tr>
 <td align="center" width="50%">
-<img src="assets/1.png" alt="转换前的Markdown效果" width="400"/>
+<img src="https://raw.githubusercontent.com/MurphyLo/md2juya/main/assets/1.png" alt="转换前的Markdown效果" width="400"/>
 <br/>
 </td>
 <td align="center" width="50%">
-<img src="assets/2.png" alt="转换后的H5样式效果" width="400"/>
+<img src="https://raw.githubusercontent.com/MurphyLo/md2juya/main/assets/2.png" alt="转换后的H5样式效果" width="400"/>
 <br/>
 </td>
 </tr>

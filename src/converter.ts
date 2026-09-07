@@ -314,12 +314,14 @@ export class JuyaH5Maker {
     if (startsWithBacktick) {
       const codeMatch = compacted.match(/^(<code\b[^>]*>[\s\S]*?<\/code>)(\s*)([\s\S]*)$/);
       if (codeMatch) {
-        const labelHtml = codeMatch[1];
+        const labelHtml = codeMatch[1]!.replace(/style="([^"]*)"/, (_, style) =>
+          `style="${style} ${JuyaStyles.liFlex.code}"`);
         const restRaw = codeMatch[3] || '';
         const restContent = restRaw ? this.compactHTML(restRaw) : '';
-        const labelWrapper = `<div style="${JuyaStyles.liFlex.label}">${labelHtml}</div>`;
+        // 使用 section，避免微信编辑器将 div 转成段落时丢失布局样式。
+        const labelWrapper = `<section style="${JuyaStyles.liFlex.label}">${labelHtml}</section>`;
         const contentWrapper = restContent
-          ? `<div style="${JuyaStyles.liFlex.content}">${restContent}</div>`
+          ? `<section style="${JuyaStyles.liFlex.content}">${restContent}</section>`
           : '';
         return `<li style="${liStyle}"><section style="${JuyaStyles.liFlex.container}">${labelWrapper}${contentWrapper}</section></li>`;
       }

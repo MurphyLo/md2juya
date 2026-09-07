@@ -1,8 +1,11 @@
 {
   "name": "md2juya",
-  "version": "0.11.12",
+  "version": "0.12.0",
   "description": "Convert Markdown to Juya AI Daily WeChat H5",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "bin": {
     "md2juya": "dist/cli.js"
   },
@@ -14,7 +17,7 @@
   "keywords": [
     "markdown",
     "wechat",
-    "h5", 
+    "h5",
     "converter"
   ],
   "license": "MIT",
