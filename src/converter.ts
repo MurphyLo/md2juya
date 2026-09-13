@@ -176,9 +176,11 @@ export class JuyaH5Maker {
       // 移除多余的换行和空格，保持紧凑格式
       parsedContent = this.compactHTML(parsedContent);
       
-      return `<blockquote style="${JuyaStyles.blockquote.style}">
+      // 用 section 而非 blockquote：微信正文样式表的 blockquote::before 会画一条
+      // 3px 灰竖条，伪元素无法被内联 style 覆盖
+      return `<section style="${JuyaStyles.blockquote.style}">
         <p style="${JuyaStyles.blockquote.p}">${parsedContent}</p>
-      </blockquote>`;
+      </section>`;
     };
 
     // 代码块渲染
