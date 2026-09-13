@@ -101,7 +101,7 @@ export const JuyaStyles = {
 
   // 表格样式
   table: {
-    style: `display: table; text-align: left; width: 100%; border-collapse: collapse; border-spacing: 0px; table-layout: fixed; background-color: rgb(253, 252, 250);`
+    style: `display: table; margin: 0; text-align: left; width: 100%; border-collapse: collapse; border-spacing: 0px; table-layout: fixed; background-color: rgb(253, 252, 250);`
   },
 
   // 表头样式
