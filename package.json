@@ -1,6 +1,6 @@
 {
   "name": "md2juya",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "Convert Markdown to Juya AI Daily WeChat H5",
   "main": "dist/index.js",
   "files": [
@@ -26,7 +26,8 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "marked": "^16.2.1"
+    "marked": "^16.2.1",
+    "parse5": "^8.0.1"
   },
   "type": "module",
   "author": "MurphyLo",

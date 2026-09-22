@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import { JuyaStyles } from './styles.js';
+import { preserveColors } from './preserve-colors.js';
 
 /**
  * 配置自定义 tokenizer，修复中文符号作为边界的加粗问题
@@ -380,11 +381,11 @@ export class JuyaH5Maker {
     );
     
     // 包装在标准容器中，添加必要的标识
-    const html = `<div class="${JuyaStyles.container.className}" style="${JuyaStyles.container.style}">
+    const html = preserveColors(`<div class="${JuyaStyles.container.className}" style="${JuyaStyles.container.style}">
       <section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.innerStyle}">
         ${rawHtml}
       </section>
-    </div>`.trim();
+    </div>`.trim());
     
     const sizeKB = this.calculateSizeKB(html);
     
