@@ -53,7 +53,7 @@ export const JuyaStyles = {
     container: `display: flex; align-items: baseline; margin: 0px; padding: 0px;`,
     label: `display: inline-block; flex: 0 0 auto; margin: 0px; line-height: inherit;`,
     code: `display: inline; white-space: nowrap; word-break: normal; overflow-wrap: normal; transform: none;`,
-    content: `display: block; flex: 1 1 auto; min-width: 0; margin: 0px 0px 0px 2px; word-break: break-word; overflow-wrap: break-word; font-size: inherit; line-height: inherit;`
+    content: `color: rgb(0, 0, 0); display: block; flex: 1 1 auto; min-width: 0; margin: 0px 0px 0px 2px; word-break: break-word; overflow-wrap: break-word; font-size: inherit; line-height: inherit;`
   },
 
   // 引用块样式

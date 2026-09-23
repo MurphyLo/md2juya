@@ -330,7 +330,7 @@ export class JuyaH5Maker {
       }
     }
 
-    return `<li style="${liStyle}"><section>${compacted}</section></li>`;
+    return `<li style="${liStyle}"><section style="color: rgb(0, 0, 0);">${compacted}</section></li>`;
   }
 
   private normalizeListItemTokens(tokens: any[]): any[] {
