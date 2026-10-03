@@ -1,12 +1,18 @@
-import { marked } from 'marked';
-import { JuyaStyles } from './styles.js';
+import { Marked, Renderer } from 'marked';
+import { createStyles, type JuyaStyleSheet } from './styles.js';
+import { resolveTheme, type ThemeTokens } from './themes/index.js';
 import { preserveColors } from './preserve-colors.js';
+
+export interface ConvertOptions {
+  /** 内置主题名或自定义主题，默认 'juya' */
+  theme?: string | ThemeTokens | undefined;
+}
 
 /**
  * 配置自定义 tokenizer，修复中文符号作为边界的加粗问题
  * 基于 marked.js 16.2.1 的修改方案 - 扩展标点符号检查以兼容中文符号
  */
-function setupChineseBoldFix() {
+function setupChineseBoldFix(marked: Marked) {
   marked.use({
     tokenizer: {
       emStrong(src: string, maskedSrc: string, prevChar = '') {
@@ -113,10 +119,17 @@ function setupChineseBoldFix() {
  * 直接的数据驱动渲染，无复杂抽象层
  */
 export class JuyaH5Maker {
-  private inlineContext: 'default' | 'plain' = 'default';
-  
-  constructor() {
-    setupChineseBoldFix(); // 首先配置中文加粗修复
+  private inlineContext: 'default' | 'plain' | 'heading' = 'default';
+  // 每个实例独立的 marked，避免不同主题的渲染器互相覆盖
+  private readonly marked = new Marked();
+  readonly styles: JuyaStyleSheet;
+  private readonly hasHeadingText: boolean;
+
+  constructor(options: ConvertOptions = {}) {
+    const theme = resolveTheme(options.theme);
+    this.hasHeadingText = theme.color.headingText !== undefined;
+    this.styles = createStyles(theme);
+    setupChineseBoldFix(this.marked); // 首先配置中文加粗修复
     this.setupMarkedRenderer();
   }
 
@@ -124,30 +137,30 @@ export class JuyaH5Maker {
    * 配置marked渲染器，直接映射到微信样式
    */
   private setupMarkedRenderer(): void {
-    const renderer = new marked.Renderer();
+    const renderer = new Renderer();
     
     // H1标题渲染
     renderer.heading = ({ tokens, depth }: any) => {
-      const text = this.withInlineContext('default', () => this.parseTokens(tokens));
+      const text = this.withInlineContext(depth === 2 && this.hasHeadingText ? 'heading' : 'default', () => this.parseTokens(tokens));
       if (depth === 1) {
-        return `<h1 style="${JuyaStyles.h1.style}">
+        return `<h1 style="${this.styles.h1.style}">
           <span style="display: none;"></span>
-          <span style="${JuyaStyles.h1.span}">${text}</span>
+          <span style="${this.styles.h1.span}">${text}</span>
           <span style="display: none;"></span>
         </h1>`;
       }
       
       if (depth === 2) {
-        return `<h2 style="${JuyaStyles.h2.style}">
+        return `<h2 style="${this.styles.h2.style}">
           <span style="display: none;"></span>
-          <span style="${JuyaStyles.h2.span}">${text}</span>
+          <span style="${this.styles.h2.span}">${text}</span>
           <span style="display: none;"></span>
         </h2>`;
       }
       
       if (depth === 3) {
         // 微信编辑器会删除空 span；不换行空格用于保留两侧装饰节点。
-        return `<h3 style="${JuyaStyles.h3.style}"><span aria-hidden="true" style="${JuyaStyles.h3.marker}">&nbsp;</span><span style="${JuyaStyles.h3.span}">${text}</span><span aria-hidden="true" style="${JuyaStyles.h3.line}">&nbsp;</span></h3>`;
+        return `<h3 style="${this.styles.h3.style}"><span aria-hidden="true" style="${this.styles.h3.marker}">&nbsp;</span><span style="${this.styles.h3.span}">${text}</span><span aria-hidden="true" style="${this.styles.h3.line}">&nbsp;</span></h3>`;
       }
 
       return `<h${depth}>${text}</h${depth}>`;
@@ -159,13 +172,13 @@ export class JuyaH5Maker {
         return this.renderImage(tokens[0]);
       }
       const text = this.withInlineContext('plain', () => this.parseTokens(tokens));
-      return `<p style="${JuyaStyles.p.style}">${text}</p>`;
+      return `<p style="${this.styles.p.style}">${text}</p>`;
     };
 
     // 列表渲染
     renderer.list = ({ items }: any) => {
       const body = items.map((item: any) => this.renderListItem(item)).join('');
-      return `<ul class="${JuyaStyles.ul.className}" style="${JuyaStyles.ul.style}">${body}</ul>`;
+      return `<ul class="${this.styles.ul.className}" style="${this.styles.ul.style}">${body}</ul>`;
     };
 
     // 引用块渲染
@@ -173,20 +186,20 @@ export class JuyaH5Maker {
       // 获取原始文本内容
       const rawText = tokens.map((token: any) => token.raw || token.text || '').join('');
       // 重新解析这个文本以确保markdown被正确处理
-      let parsedContent = this.withInlineContext('plain', () => marked.parseInline(rawText) as string);
+      let parsedContent = this.withInlineContext('plain', () => this.marked.parseInline(rawText) as string);
       // 移除多余的换行和空格，保持紧凑格式
       parsedContent = this.compactHTML(parsedContent);
       
       // 用 section 而非 blockquote：微信正文样式表的 blockquote::before 会画一条
       // 3px 灰竖条，伪元素无法被内联 style 覆盖
-      return `<section style="${JuyaStyles.blockquote.style}">
-        <p style="${JuyaStyles.blockquote.p}">${parsedContent}</p>
+      return `<section style="${this.styles.blockquote.style}">
+        <p style="${this.styles.blockquote.p}">${parsedContent}</p>
       </section>`;
     };
 
     // 代码块渲染
     renderer.code = ({ text }: any) => {
-      return `<pre style="${JuyaStyles.pre.style}"><code style="${JuyaStyles.pre.code}"><span leaf="">${this.escapeHtml(text)}</span></code></pre>`;
+      return `<pre style="${this.styles.pre.style}"><code style="${this.styles.pre.code}"><span leaf="">${this.escapeHtml(text)}</span></code></pre>`;
     };
 
     // 内联代码渲染
@@ -196,20 +209,20 @@ export class JuyaH5Maker {
 
     // 图片渲染
     renderer.image = ({ href, title, text }: any) => {
-      return `<figure style="${JuyaStyles.figure.style}">
-        <img style="${JuyaStyles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
+      return `<figure style="${this.styles.figure.style}">
+        <img style="${this.styles.figure.img}" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''} />
       </figure>`;
     };
 
     // 水平分割线渲染
     renderer.hr = () => {
-      return `<hr style="${JuyaStyles.hr.style}" />`;
+      return `<hr style="${this.styles.hr.style}" />`;
     };
 
     // 强调文本渲染
     renderer.strong = ({ tokens }: any) => {
       const text = this.parseTokens(tokens);
-      return `<strong style="${JuyaStyles.strong.style}">${text}</strong>`;
+      return `<strong style="${this.styles.strong.style}${this.inlineContext === 'heading' ? 'color: inherit;' : ''}">${text}</strong>`;
     };
 
                // 表格渲染
@@ -217,8 +230,8 @@ export class JuyaH5Maker {
              const headerRow = this.renderTableHeader(header);
              const bodyRows = rows.map((row: any, index: number) => this.renderTableRow(row, index)).join('');
              
-             return `<section data-tool="mdnice编辑器" style="${JuyaStyles.tableContainer.style}">
-               <table style="${JuyaStyles.table.style}">
+             return `<section data-tool="mdnice编辑器" style="${this.styles.tableContainer.style}">
+               <table style="${this.styles.table.style}">
                  <thead>
                    ${headerRow}
                  </thead>
@@ -227,7 +240,7 @@ export class JuyaH5Maker {
              </section>`;
            };
 
-    marked.setOptions({ renderer });
+    this.marked.setOptions({ renderer });
   }
 
   /**
@@ -259,7 +272,7 @@ export class JuyaH5Maker {
         }
         return this.withInlineContext('plain', () => this.parseTokens(token.tokens || []));
       }
-      return marked.parseInline(token.raw || token.text || '') as string;
+      return this.marked.parseInline(token.raw || token.text || '') as string;
     }).join('');
   }
 
@@ -273,8 +286,8 @@ export class JuyaH5Maker {
         return this.renderImage(imageToken);
       }
     }
-    return `<figure style="${JuyaStyles.figure.style}">
-      <img style="${JuyaStyles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
+    return `<figure style="${this.styles.figure.style}">
+      <img style="${this.styles.figure.img}" src="${token.href}" alt="${token.text}" ${token.title ? `title="${token.title}"` : ''} />
     </figure>`;
   }
 
@@ -283,8 +296,8 @@ export class JuyaH5Maker {
    */
   private renderInlineCode(token: any): string {
     const style = this.inlineContext === 'plain'
-      ? JuyaStyles.inlineCodePlain.style
-      : JuyaStyles.inlineCode.style;
+      ? this.styles.inlineCodePlain.style
+      : this.styles.inlineCode.style;
     return `<code style="${style}">${this.escapeHtml(token.text)}</code>`;
   }
 
@@ -293,7 +306,7 @@ export class JuyaH5Maker {
    */
   private renderStrong(token: any): string {
     const text = token.tokens ? this.parseTokens(token.tokens) : token.text;
-    return `<strong style="${JuyaStyles.strong.style}">${text}</strong>`;
+    return `<strong style="${this.styles.strong.style}${this.inlineContext === 'heading' ? 'color: inherit;' : ''}">${text}</strong>`;
   }
 
   /**
@@ -311,26 +324,26 @@ export class JuyaH5Maker {
        (firstToken.type === 'text' && firstToken.text && firstToken.text.trim().startsWith('`')));
     
     const liStyle = startsWithBacktick 
-      ? `${JuyaStyles.li.style}list-style-type: none; margin-left: -18px; padding-left: 0;`
-      : JuyaStyles.li.style;
+      ? `${this.styles.li.style}list-style-type: none; margin-left: -18px; padding-left: 0;`
+      : this.styles.li.style;
 
     if (startsWithBacktick) {
       const codeMatch = compacted.match(/^(<code\b[^>]*>[\s\S]*?<\/code>)(\s*)([\s\S]*)$/);
       if (codeMatch) {
         const labelHtml = codeMatch[1]!.replace(/style="([^"]*)"/, (_, style) =>
-          `style="${style} ${JuyaStyles.liFlex.code}"`);
+          `style="${style} ${this.styles.liFlex.code}"`);
         const restRaw = codeMatch[3] || '';
         const restContent = restRaw ? this.compactHTML(restRaw) : '';
         // 使用 section，避免微信编辑器将 div 转成段落时丢失布局样式。
-        const labelWrapper = `<section style="${JuyaStyles.liFlex.label}">${labelHtml}</section>`;
+        const labelWrapper = `<section style="${this.styles.liFlex.label}">${labelHtml}</section>`;
         const contentWrapper = restContent
-          ? `<section style="${JuyaStyles.liFlex.content}">${restContent}</section>`
+          ? `<section style="${this.styles.liFlex.content}">${restContent}</section>`
           : '';
-        return `<li style="${liStyle}"><section style="${JuyaStyles.liFlex.container}">${labelWrapper}${contentWrapper}</section></li>`;
+        return `<li style="${liStyle}"><section style="${this.styles.liFlex.container}">${labelWrapper}${contentWrapper}</section></li>`;
       }
     }
 
-    return `<li style="${liStyle}"><section style="color: rgb(0, 0, 0);">${compacted}</section></li>`;
+    return `<li style="${liStyle}"><section style="${this.styles.li.content}">${compacted}</section></li>`;
   }
 
   private normalizeListItemTokens(tokens: any[]): any[] {
@@ -340,7 +353,7 @@ export class JuyaH5Maker {
     return tokens;
   }
 
-  private withInlineContext<T>(context: 'default' | 'plain', fn: () => T): T {
+  private withInlineContext<T>(context: 'default' | 'plain' | 'heading', fn: () => T): T {
     const previous = this.inlineContext;
     this.inlineContext = context;
     try {
@@ -371,7 +384,7 @@ export class JuyaH5Maker {
    * @returns 包含HTML内容和KB大小的对象（HTML内容符合微信接口content字段要求）
    */
   convert(markdown: string): { html: string; sizeKB: number } {
-    let rawHtml = marked.parse(markdown) as string;
+    let rawHtml = this.marked.parse(markdown) as string;
     
     // 修正第一个图片的上边距问题：开头的图片不需要上边距
     // 直接替换第一个figure的margin，从 "margin: 30px 10px" 改为 "margin: 0px 10px 30px"
@@ -381,8 +394,8 @@ export class JuyaH5Maker {
     );
     
     // 包装在标准容器中，添加必要的标识
-    const html = preserveColors(`<div class="${JuyaStyles.container.className}" style="${JuyaStyles.container.style}">
-      <section ${JuyaStyles.container.dataAttr} style="${JuyaStyles.container.innerStyle}">
+    const html = preserveColors(`<div class="${this.styles.container.className}" style="${this.styles.container.style}">
+      <section ${this.styles.container.dataAttr} style="${this.styles.container.innerStyle}">
         ${rawHtml}
       </section>
     </div>`.trim());
@@ -413,9 +426,9 @@ export class JuyaH5Maker {
          private renderTableHeader(header: any[]): string {
            const cells = header.map(cell => {
              const cellContent = cell.tokens
-               ? this.withInlineContext('plain', () => this.parseTokens(cell.tokens))
+               ? this.withInlineContext(this.hasHeadingText ? 'heading' : 'plain', () => this.parseTokens(cell.tokens))
                : this.escapeHtml(cell.text ?? '');
-             return `<th style="${JuyaStyles.th.style}">
+             return `<th style="${this.styles.th.style}">
                <section>
                  <span leaf="">${cellContent}</span>
                </section>
@@ -430,13 +443,13 @@ export class JuyaH5Maker {
    */
   private renderTableRow(row: any[], index: number): string {
     const isEven = index % 2 === 1; // 因为header算第0行，所以从1开始为偶数行
-    const rowStyle = isEven ? JuyaStyles.trEven.style : JuyaStyles.trOdd.style;
+    const rowStyle = isEven ? this.styles.trEven.style : this.styles.trOdd.style;
     
     const cells = row.map(cell => {
       const cellContent = cell.tokens
         ? this.withInlineContext('plain', () => this.parseTokens(cell.tokens))
         : this.escapeHtml(cell.text ?? '');
-      return `<td style="${JuyaStyles.td.style}">
+      return `<td style="${this.styles.td.style}">
         <section>
           <span leaf="">${cellContent}</span>
         </section>
@@ -447,7 +460,7 @@ export class JuyaH5Maker {
   }
 }
 
-export function convertToJuyaH5(markdown: string): { html: string; sizeKB: number } {
-  const maker = new JuyaH5Maker();
+export function convertToJuyaH5(markdown: string, options: ConvertOptions = {}): { html: string; sizeKB: number } {
+  const maker = new JuyaH5Maker(options);
   return maker.convert(markdown);
 }

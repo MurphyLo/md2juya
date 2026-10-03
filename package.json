@@ -1,6 +1,6 @@
 {
   "name": "md2juya",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "Convert Markdown to Juya AI Daily WeChat H5",
   "main": "dist/index.js",
   "files": [
@@ -12,7 +12,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "prepublishOnly": "npm run build",
+    "preview:themes": "npm run build && node examples/theme-preview/build.mjs"
   },
   "keywords": [
     "markdown",

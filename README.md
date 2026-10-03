@@ -119,10 +119,37 @@ const maker = new JuyaH5Maker();
 const { html, sizeKB } = maker.convert(markdown, true);
 ```
 
+#### 主题
+
+| 主题 | 风格 |
+| --- | --- |
+| `juya`（默认） | 暖色：米色底、橘色强调、绿色 h2 底线 |
+| `porcelain` | 浅灰白底、深蓝文字、蓝色强调 |
+| `enji` | 浅底色、深红标题、浅色标题文字 |
+
+```typescript
+import { convertToJuyaH5, JuyaH5Maker, listThemes, juya } from 'md2juya';
+
+convertToJuyaH5(markdown, { theme: 'porcelain' });
+new JuyaH5Maker({ theme: 'porcelain' }).convert(markdown);
+listThemes(); // ['juya', 'porcelain', 'enji']
+
+// 自定义主题：传入完整 ThemeTokens，通常在内置主题基础上改色
+convertToJuyaH5(markdown, {
+  theme: { ...juya, name: 'mine', color: { ...juya.color, accent: '#1a7f5a' } }
+});
+```
+
+主题只包含颜色和字体（`ThemeTokens`），间距、圆角等版式由 `createStyles` 固定。
+公众号正文只保留内联 `style`，因此主题在生成时写入，不使用 CSS 变量或 `<style>`。
+未知主题名会抛错。不传 `theme` 时输出与 0.13.x 相同；`JuyaStyles` 仍导出默认主题的样式。
+
+CLI：`md2juya input.md --theme porcelain`，`md2juya --list-themes`。
+
 **TODO:**
 
-- [ ] 自定义样式覆盖
-- [ ] 主题系统
+- [ ] 自定义样式覆盖（按元素追加 style）
+- [x] 主题系统
 
 ### 本地开发
 ```bash
@@ -147,11 +174,15 @@ npm unlink -g md2juya
 
 ```
 src/
-├── styles.ts      # 样式配置 - 从原始微信HTML精确提取
-├── converter.ts   # 核心转换逻辑 - 自定义marked.js渲染器  
+├── themes/        # 主题配色（juya、porcelain、enji）与注册表
+├── styles.ts      # 样式配置 - 从原始微信HTML精确提取，按主题生成
+├── converter.ts   # 核心转换逻辑 - 自定义marked.js渲染器（每个实例独立的 Marked）
 ├── index.ts       # 包主入口 - 导出API接口
 └── cli.ts         # CLI工具 - 命令行接口
 ```
+
+测试：`npm test`。`tests/fixtures/*.juya.snap` 是默认主题的逐字节快照，有意修改版式后用
+`UPDATE_SNAPSHOTS=1 npm test` 重新生成。
 
 ## H5内容边界说明
 
@@ -170,3 +201,11 @@ src/
 验证：`npm run build && node --test tests/preserve-colors.test.mjs`。
 
 0.13.1 补充：列表文字节点显式使用原黑色；未自定义颜色的“查看原文”链接固定为微信浅色链接色 `#576b95`，避免 `--weui-LINK` 随主题变浅。背景及其他配色不变。
+
+### 主题预览与来源
+
+运行 `npm run preview:themes`，打开 `examples/theme-preview/index.html`，可对照 `juya`、`porcelain` 与 `enji`；每个主题也有独立 HTML。主题名称统一使用主题 ID，不另设中文昵称。预览使用相同正文、390px 栏宽。默认主题仍为 juya，其他主题需显式选择。
+
+porcelain 采用 [Radix 官方浅色色阶](https://github.com/radix-ui/colors/blob/main/src/light.ts) 的 Slate + Blue。页面角色映射为本项目试配。
+
+`enji` 的名称与标题红取自 [NIPPON COLORS](https://nipponcolors.com/#enji) 的燕脂 `#9F353A`，强调色采用蘇芳 `#8E354A`。页面底色 `#FBF6F6` 与其余配套色为本项目试配。
