@@ -112,6 +112,7 @@ export function createStyles({ font, color: c }: ThemeTokens) {
 
     // 表头样式
     th: {
+      content: `color: ${c.headingText ?? c.text};`,
       style: `white-space-collapse: collapse; overflow-wrap: break-word; word-break: break-all; color: ${c.headingText ?? c.text}; line-height: 1.5em; letter-spacing: 0em; font-weight: bold; background-attachment: scroll; background-clip: border-box; background-image: none; background-origin: padding-box; background-position: left top; background-repeat: no-repeat; background-size: auto; height: auto; border-radius: 0px; padding: 5px 10px; min-width: 85px; text-align: left; font-size: 14px; border: medium; background-color: ${c.h2Bg};`
     },
 
@@ -127,7 +128,8 @@ export function createStyles({ font, color: c }: ThemeTokens) {
 
     // 表格单元格样式
     td: {
-      style: `white-space-collapse: collapse; overflow-wrap: break-word; word-break: break-all; padding: 5px 10px; min-width: 85px; border-radius: 0px; text-align: left; font-size: 14px; border: medium;`
+      content: `color: ${c.text};`,
+      style: `white-space-collapse: collapse; overflow-wrap: break-word; word-break: break-all; color: ${c.text}; padding: 5px 10px; min-width: 85px; border-radius: 0px; text-align: left; font-size: 14px; border: medium;`
     }
   };
 }

@@ -429,8 +429,8 @@ export class JuyaH5Maker {
                ? this.withInlineContext(this.hasHeadingText ? 'heading' : 'plain', () => this.parseTokens(cell.tokens))
                : this.escapeHtml(cell.text ?? '');
              return `<th style="${this.styles.th.style}">
-               <section>
-                 <span leaf="">${cellContent}</span>
+               <section style="${this.styles.th.content}">
+                 <span leaf="" style="${this.styles.th.content}">${cellContent}</span>
                </section>
              </th>`;
            }).join('');
@@ -450,8 +450,8 @@ export class JuyaH5Maker {
         ? this.withInlineContext('plain', () => this.parseTokens(cell.tokens))
         : this.escapeHtml(cell.text ?? '');
       return `<td style="${this.styles.td.style}">
-        <section>
-          <span leaf="">${cellContent}</span>
+        <section style="${this.styles.td.content}">
+          <span leaf="" style="${this.styles.td.content}">${cellContent}</span>
         </section>
       </td>`;
     }).join('');
